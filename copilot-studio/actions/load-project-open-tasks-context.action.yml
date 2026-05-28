@@ -1,0 +1,49 @@
+# Copilot Studio action — load-project-open-tasks-context
+#
+# PURPOSE: Load project task and task-assignment context for the
+#          what-are-my-open-tasks topic.
+#
+# ACTION DEFINITION FORMAT NOTE:
+#   This repository stores Copilot Studio actions as source specs. The live action
+#   must still be authored and exported from Copilot Studio / solution pack using
+#   the supported connector schema for the target environment.
+#
+# OUTPUT CONTRACT (mirrors app/src/ai/context/projectOpenTasksContext.ts):
+#   projectRecord: full msdyn_project record
+#   tasks:         msdyn_projecttask[] for the active project
+#   assignments:   msdyn_resourceassignment[] filtered to active task assignments
+#
+# DATAVERSE ENTITIES:
+#   msdyn_project            — project record
+#   msdyn_projecttask        — project tasks
+#   msdyn_resourceassignment — active task assignments
+#
+# SAFETY RULES:
+#   Read-only. No writes. Advisory output only.
+#
+kind: ConnectorActionNode
+displayName: Load Project Open Tasks Context
+description: >
+  Loads project task and task assignment context for Mira's open-task advisory.
+schemaName: pmo_LoadProjectOpenTasksContext
+inputs:
+  - name: projectId
+    type: String
+    description: The msdyn_project GUID for the active project
+    required: true
+outputs:
+  - name: projectRecord
+    type: Object
+    description: Full msdyn_project record
+  - name: tasks
+    type: Array
+    description: Project task rows for the active project
+  - name: assignments
+    type: Array
+    description: Active resource assignments for project tasks
+# CONNECTOR: Dataverse
+# ENVIRONMENT VARIABLE: default.cds
+# OPERATIONS SEQUENCE:
+#   1. GET msdyn_projects?$filter=msdyn_projectid eq '@{inputs.projectId}'
+#   2. GET msdyn_projecttasks?$filter=_msdyn_project_value eq '@{inputs.projectId}'&$orderby=msdyn_displaysequence asc
+#   3. GET msdyn_resourceassignments?$filter=_msdyn_projectid_value eq '@{inputs.projectId}' and statecode eq 0&$top=1000

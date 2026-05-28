@@ -1,0 +1,10 @@
+<catalog uniquename="pmo_PMODocumentManagement">
+  <description default="Root catalog for PMO document management actions">
+    <label description="Root catalog for PMO document management actions" languagecode="1033" />
+  </description>
+  <displayname default="PMO Document Management">
+    <label description="PMO Document Management" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>PMO Document Management</name>
+</catalog>

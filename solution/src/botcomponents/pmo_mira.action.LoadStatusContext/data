@@ -1,0 +1,15 @@
+kind: TaskDialog
+modelDisplayName: Load Status Context
+modelDescription: Load recent status context for project and program reporting.
+outputs:
+  - propertyName: Response
+
+action:
+  kind: InvokeConnectorTaskAction
+  connectionReference: pmo_mira.shared_commondataserviceforapps.shared-commondataser-b20762f9-bfbd-4130-989c-d9c69250ba63
+  connectionProperties:
+    mode: Invoker
+
+  operationId: ListRecordsWithOrganization
+
+outputMode: All

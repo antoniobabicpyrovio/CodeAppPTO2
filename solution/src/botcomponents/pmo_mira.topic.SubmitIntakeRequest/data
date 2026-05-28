@@ -1,0 +1,36 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Submit Intake Request
+    triggerQueries:
+      - submit a request
+      - new PMO request
+      - I need to request a project
+      - raise a change request
+      - start an intake
+      - submit intake
+      - I have a request for the PMO
+      - request a new project
+      - I need help from the PMO
+  actions:
+    - kind: Question
+      id: question_submissionText
+      variable: Topic.SubmissionText
+      prompt: I can help you submit a PMO request. Please describe what you need.
+      entity: StringPrebuiltEntity
+
+    - kind: BeginDialog
+      id: invoke_createIntakeRecord
+      displayName: Create Intake Record
+      input: {}
+      dialog: pmo_mira.action.CreateIntakeRecord
+
+    - kind: SendActivity
+      id: sendActivity_success
+      activity:
+        text: Your request has been submitted to the PMO team. We will be in touch shortly.
+
+inputType: {}
+outputType: {}

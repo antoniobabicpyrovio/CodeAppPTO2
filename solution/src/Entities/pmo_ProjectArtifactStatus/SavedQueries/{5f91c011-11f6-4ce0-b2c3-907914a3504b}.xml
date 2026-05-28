@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{5f91c011-11f6-4ce0-b2c3-907914a3504b}</savedqueryid>
+    <layoutxml>
+      <grid name="pmo_projectartifactstatuses" jump="pmo_name" select="1" icon="1" preview="0">
+        <row name="pmo_projectartifactstatus" id="pmo_projectartifactstatusid">
+          <cell name="pmo_name" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>64</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="pmo_projectartifactstatus">
+          <attribute name="pmo_projectartifactstatusid" />
+          <attribute name="pmo_name" />
+          <attribute name="createdon" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.2.4.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Project Artifact Status Lookup View" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

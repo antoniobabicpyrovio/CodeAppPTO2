@@ -1,0 +1,36 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: PMO Triage Needs Attention
+    triggerQueries:
+      - pmo triage needs attention
+      - what needs attention now
+      - show urgent items
+      - which projects need action
+      - triage my portfolio
+      - what should I focus on
+      - show me the highest risk projects
+      - rank projects by urgency
+  actions:
+    - kind: SetVariable
+      id: set_scope
+      variable: Topic.Scope
+      value: =System.Activity.ChannelData.scope
+    - kind: SetVariable
+      id: set_entityId
+      variable: Topic.EntityId
+      value: =System.Activity.ChannelData.entityId
+    - kind: BeginDialog
+      id: invoke_loadTriageContext
+      displayName: Load Portfolio Triage Context
+      input: {}
+      dialog: pmo_mira.action.LoadPortfolioTriageContext
+    - kind: SendActivity
+      id: sendActivity_triage
+      activity:
+        text: I have loaded the portfolio triage context. Check the triage panel in the PMO app for a ranked view of projects needing attention.
+
+inputType: {}
+outputType: {}

@@ -1,0 +1,89 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      description: Which domain does this bug affect?
+      options:
+        - Application Domain (pages, components, hooks, models, api)
+        - Platform Domain (lib, providers, ai, mira, CI/CD, solution, scripts)
+        - Cross-Domain (spans both)
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: What is the bug? Describe the unexpected behavior.
+      placeholder: Describe what is happening that should not be.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should happen instead?
+      placeholder: Describe the correct expected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide the steps to reproduce this bug.
+      placeholder: |
+        1. Navigate to ...
+        2. Click on ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where was this bug observed?
+      options:
+        - Nexus RCM DEV
+        - Local dev server (npm run dev)
+        - Production
+        - CI/CD pipeline
+    validations:
+      required: true
+
+  - type: textarea
+    id: dataverse-error
+    attributes:
+      label: Dataverse Error Details
+      description: If this bug involves a Dataverse operation, include the error code and message from the browser console or network tab. Write "N/A" if not Dataverse-related.
+      placeholder: |
+        Error code:
+        Error message:
+        Entity/endpoint affected:
+    validations:
+      required: false
+
+  - type: textarea
+    id: affected-files
+    attributes:
+      label: Affected Files
+      description: List any files you believe are related to this bug, if known.
+      placeholder: Optional — list file paths if known.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Screenshots, console output, or any other relevant information.
+      placeholder: Optional additional context.
+    validations:
+      required: false

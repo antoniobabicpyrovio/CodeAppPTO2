@@ -1,0 +1,96 @@
+# Copilot Studio topic — explain-program-health
+#
+# MIRRORS: app/src/ai/topics/explainProgramHealth.ts
+# OUTPUT CONTRACT: ProgramHealthAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# CRITICAL RULE (from app/src/api/programs.api.ts + programContext.ts):
+#   MUST use record-level program fetch + related project composition.
+#   MUST NOT rely solely on list-level program rollup fields — they are intentionally
+#   excluded from list queries and may be incomplete.
+#
+# TRIGGER: User asks about program health, portfolio rollup, or cross-project status.
+# CONTEXT: Requires active program page context (programId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - "explain program health"
+#   - "how is the program doing"
+#   - "program health summary"
+#   - "show program rollup"
+#   - "which projects are at risk in this program"
+#   - "program delivery status"
+#   - "how are projects performing in this program"
+#
+# GROUNDING RULES (from app/src/ai/grounding/signals.ts — programHealthSignals):
+#   Health codes:       189330000 = On Track | 189330001 = At Risk | 189330002 = Off Track
+#   Program signals:    proj_overallhealth, proj_schedulehealth, proj_financialhealth
+#   Rollup signals:     Active Projects count, At Risk / Off Track cluster
+#   Stale threshold:    14 days (statusFreshness in programContext.ts)
+#
+# ATTENTION ITEM LOGIC (from explainProgramHealth.ts buildAttentionItems):
+#   1. Program overall health Off Track → "Program-level health is Off Track."
+#   2. Off-track projects (overallHealth = Off Track) → "N project(s) are Off Track."
+#   3. Overdue projects (finish date past) → "N project(s) have exceeded their planned finish date."
+#   4. Stale status (statusFreshness.stale) → "N project(s) have not reported status in 14+ days."
+#   5. Missing status (statusFreshness.missing) → "N project(s) have no status reports on record."
+#
+# OUTPUT STRUCTURE (matches ProgramHealthAdvisory in contracts.ts):
+#   topicId:        'explain-program-health'
+#   mode:           'advisory'
+#   programId:      <from input>
+#   programName:    msdyn_projectprogram.msdyn_name
+#   overallHealth:  resolved health label
+#   healthSignals:  array of { dimension, value, status } — 5 signals (see signals.ts)
+#   projectRollup:  { total, onTrack, atRisk, offTrack }
+#   summary:        generated narrative specific to program name + rollup
+#   attentionItems: string array from attention item logic above
+#   sourceStatus:   per-data-source status array
+#   confidence:     'high' | 'medium' | 'low'
+#   generatedAt:    ISO timestamp
+#
+# SAFETY RULES:
+#   Advisory only. No write-intent. Partial data → surface sourceStatus, reduce confidence.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Explain Program Health
+    triggerQueries:
+      - explain program health
+      - how is the program doing
+      - program health summary
+      - show program rollup
+      - which projects are at risk in this program
+      - program delivery status
+      - how are projects performing in this program
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProgramId
+      value: =System.Activity.ChannelData.programId
+    - kind: InvokeAction
+      actionName: pmo_LoadProgramContextEnriched
+      inputs:
+        programId: =Topic.ProgramId
+      outputs:
+        programRecord: Topic.ProgramRecord
+        relatedProjects: Topic.RelatedProjects
+        statusReports: Topic.StatusReports
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Explain the health of the program below.
+        CRITICAL: Use ONLY the record-level program data provided — do NOT infer rollups from list data.
+        Health code mapping: 189330000 = "On Track", 189330001 = "At Risk", 189330002 = "Off Track".
+        Compute: onTrack/atRisk/offTrack counts from related projects' overallHealth codes.
+        Apply the stale threshold: 14 days. Apply all attention item logic from the topic spec.
+        Return: overall health label, 5 program signals, project rollup, specific summary, attention items.
+        Advisory only — no write suggestions.
+      inputs:
+        programRecord: =Topic.ProgramRecord
+        relatedProjects: =Topic.RelatedProjects
+        statusReports: =Topic.StatusReports
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory

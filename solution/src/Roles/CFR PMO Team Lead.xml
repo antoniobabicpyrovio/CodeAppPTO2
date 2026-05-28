@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Role id="{c6af530c-6038-f111-88b4-6045bdd9f227}" name="CFR PMO Team Lead" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsCustomizable>1</IsCustomizable>
+  <IsAutoAssigned>0</IsAutoAssigned>
+  <Description>Triage intake requests and manage project team assignments within the business unit. Stack with Project User.</Description>
+  <RolePrivileges>
+    <RolePrivilege name="prvAppendpmo_ProjectRequest" level="Local" />
+    <RolePrivilege name="prvAppendpmo_ProjectTeam" level="Local" />
+    <RolePrivilege name="prvAppendTopmo_ProjectRequest" level="Local" />
+    <RolePrivilege name="prvAppendTopmo_ProjectTeam" level="Local" />
+    <RolePrivilege name="prvAssignpmo_ProjectRequest" level="Local" />
+    <RolePrivilege name="prvAssignpmo_ProjectTeam" level="Local" />
+    <RolePrivilege name="prvCreatepmo_ProjectRequest" level="Local" />
+    <RolePrivilege name="prvCreatepmo_ProjectTeam" level="Local" />
+    <RolePrivilege name="prvCreateSharePointData" level="Global" />
+    <RolePrivilege name="prvDeletepmo_ProjectRequest" level="Local" />
+    <RolePrivilege name="prvDeletepmo_ProjectTeam" level="Local" />
+    <RolePrivilege name="prvReadPluginAssembly" level="Global" />
+    <RolePrivilege name="prvReadPluginType" level="Global" />
+    <RolePrivilege name="prvReadpmo_ProjectRequest" level="Local" />
+    <RolePrivilege name="prvReadpmo_ProjectTeam" level="Local" />
+    <RolePrivilege name="prvReadSdkMessage" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStep" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStepImage" level="Global" />
+    <RolePrivilege name="prvReadSharePointData" level="Global" />
+    <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvWritepmo_ProjectRequest" level="Local" />
+    <RolePrivilege name="prvWritepmo_ProjectTeam" level="Local" />
+    <RolePrivilege name="prvWriteSharePointData" level="Global" />
+  </RolePrivileges>
+</Role>

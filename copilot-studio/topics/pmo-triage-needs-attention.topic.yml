@@ -1,0 +1,103 @@
+# Copilot Studio topic — pmo-triage-needs-attention
+#
+# MIRRORS: app/src/ai/topics/pmoTriageNeedsAttention.ts
+# OUTPUT CONTRACT: TriageSummary (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, ranked attention list only)
+#
+# TRIGGER: User requests a triage ranking of projects needing urgent attention.
+# CONTEXT: Scope determined from MiraPanel route context (project/program/portfolio).
+#
+# INTENT TRIGGER PHRASES:
+#   - "pmo triage needs attention"
+#   - "what needs attention now"
+#   - "show urgent items"
+#   - "which projects need action"
+#   - "triage my portfolio"
+#   - "what should I focus on"
+#   - "show me the highest risk projects"
+#   - "rank projects by urgency"
+#
+# SCORING ALGORITHM (from pmoTriageNeedsAttention.ts — scoreProject):
+#   EXACT thresholds — do NOT deviate from these values:
+#   Off Track overall health (code 189330002):    +5 points
+#   At Risk overall health (code 189330001):      +3 points
+#   Overdue (msdyn_scheduledend < today):         +2 points
+#   High risk load (active risks > 2):            +3 points
+#   High issue load (active issues > 2):          +2 points
+#   Stale status (last report > 14 days ago):     +2 points
+#   Missing status (no status reports at all):    +2 points
+#   Threshold: score > 0 to include in triage list
+#   Sort: descending by score
+#   Top N: maximum 8 items returned
+#
+# OUTPUT STRUCTURE (matches TriageSummary in contracts.ts):
+#   topicId:              'pmo-triage-needs-attention'
+#   mode:                 'advisory'
+#   scope:                'project' | 'program' | 'portfolio'
+#   summary:              1 sentence overview of triage state
+#   rankedAttentionItems: array of TriageAttentionItem:
+#     rank:               1-based
+#     scope:              'project' | 'program' | 'portfolio'
+#     entityId:           project GUID (optional)
+#     title:              project name
+#     whyNow:             specific reason using score factors
+#     recommendedNextStep: actionable concrete next step
+#     severity:           'high' (score≥7) | 'medium' (score 4-6) | 'low' (score 1-3)
+#   sourceStatus: per-source status array
+#   confidence:   'high' | 'medium' | 'low'
+#   generatedAt:  ISO timestamp
+#
+# SAFETY RULES:
+#   Advisory only. No write-intent. Triage output is informational ranking only.
+#   Do NOT suggest automated actions or modifications without user review.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: PMO Triage Needs Attention
+    triggerQueries:
+      - pmo triage needs attention
+      - what needs attention now
+      - show urgent items
+      - which projects need action
+      - triage my portfolio
+      - what should I focus on
+      - show me the highest risk projects
+      - rank projects by urgency
+  actions:
+    - kind: SetVariable
+      variable: Topic.Scope
+      value: =System.Activity.ChannelData.scope
+    - kind: SetVariable
+      variable: Topic.EntityId
+      value: =System.Activity.ChannelData.entityId
+    - kind: InvokeAction
+      actionName: pmo_LoadPortfolioTriageContext
+      inputs:
+        scope: =Topic.Scope
+        entityId: =Topic.EntityId
+      outputs:
+        projects: Topic.Projects
+        programs: Topic.Programs
+        latestStatus: Topic.LatestStatus
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Rank the projects below by urgency.
+        SCORING — apply EXACTLY these point values (no deviation):
+          Off Track (code 189330002): +5, At Risk (code 189330001): +3
+          Overdue finish date: +2, Active risks > 2: +3, Active issues > 2: +2
+          Last status > 14 days ago: +2, No status reports: +2
+        Include only projects with score > 0. Sort descending. Return top 8 maximum.
+        For each item: rank, title, why-now (cite the specific score factors), next step, severity.
+        Severity: high (score≥7), medium (4-6), low (1-3).
+        Return a 1-sentence portfolio summary plus the ranked list.
+        Advisory only — no write-intent output.
+      inputs:
+        projects: =Topic.Projects
+        latestStatus: =Topic.LatestStatus
+      output: Topic.Triage
+    - kind: SendActivity
+      activity:
+        text: =Topic.Triage

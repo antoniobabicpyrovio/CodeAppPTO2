@@ -1,0 +1,13 @@
+<catalog uniquename="pmo_DocumentActions">
+  <description default="Document upload and management actions for the PMO app">
+    <label description="Document upload and management actions for the PMO app" languagecode="1033" />
+  </description>
+  <displayname default="Document Actions">
+    <label description="Document Actions" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>PMO Document Actions</name>
+  <parentcatalogid>
+    <uniquename>pmo_PMODocumentManagement</uniquename>
+  </parentcatalogid>
+</catalog>

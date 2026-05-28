@@ -1,0 +1,119 @@
+# Copilot Studio topic — suggest-enhancement
+#
+# MIRRORS: app/src/ai/topics/suggestEnhancement.ts
+# OUTPUT CONTRACT: EnhancementSuggestionDraft (app/src/ai/contracts.ts)
+# MODE: draft (user must review before submitting — no Dataverse writes)
+#
+# TRIGGER: User proposes an improvement, feature request, or enhancement.
+# CONTEXT: Route and entity context prefilled from MiraPanel channel data.
+#
+# INTENT TRIGGER PHRASES:
+#   - "suggest enhancement"
+#   - "improvement idea"
+#   - "feature request"
+#   - "app enhancement"
+#   - "recommendation for this page"
+#   - "I have an idea for improving this"
+#   - "suggest a feature"
+#
+# CONFIDENCE CLASSIFICATION (from suggestEnhancement.ts — classifyConfidence):
+#   description.trim().length === 0:  'low'
+#   description.trim().length < 25:   'medium'
+#   description.trim().length >= 25:  'high'
+#
+# STRUCTURED DRAFT FORMAT (from suggestEnhancement.ts — buildStructuredEnhancementDraft):
+#   "Title: [Draft] Enhancement suggestion for PMO app"
+#   "Route: <sourceRoute or '/'>"
+#   "Entity Type: <sourceEntityType or 'other'>"
+#   "Entity Id: <sourceEntityId or 'Not provided'>"
+#   ""
+#   "Suggestion:"
+#   <userDescription if present, else 'User did not provide a description.'>
+#   ""
+#   "Problem to solve:"
+#   "[Add the current pain point.]"
+#   ""
+#   "Proposed outcome:"
+#   "[Add expected improvement.]"
+#   ""
+#   "Priority and value:"
+#   "[Add business value and urgency.]"
+#
+# OUTPUT STRUCTURE (matches EnhancementSuggestionDraft in contracts.ts):
+#   topicId:          'suggest-enhancement'
+#   mode:             'draft'
+#   sourceRoute:      string (from channel data, default '/')
+#   sourceEntityId:   string | undefined
+#   sourceEntityType: 'project' | 'program' | 'other' (normalized, default 'other')
+#   userDescription:  string (from user question)
+#   structuredDraft:  string (from structured draft format above)
+#   sourceStatus:     [{ source: 'route-context', state: 'ok' }]
+#   confidence:       'high' | 'medium' | 'low' (from confidence classification)
+#   generatedAt:      ISO timestamp
+#
+# SAFETY RULES:
+#   Draft only. No Dataverse writes. User must review before submitting.
+#   Submission goes through the app-side approval gate (MiraPanel → ApprovalGateDialog).
+#   This topic does NOT create records — it creates a reviewable draft only.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Suggest Enhancement
+    triggerQueries:
+      - suggest enhancement
+      - improvement idea
+      - feature request
+      - app enhancement
+      - recommendation for this page
+      - I have an idea for improving this
+      - suggest a feature
+  actions:
+    - kind: SetVariable
+      variable: Topic.SourceRoute
+      value: =System.Activity.ChannelData.route
+    - kind: SetVariable
+      variable: Topic.SourceEntityId
+      value: =System.Activity.ChannelData.entityId
+    - kind: SetVariable
+      variable: Topic.SourceEntityType
+      value: =System.Activity.ChannelData.scope
+    - kind: Question
+      id: question_enhancementDescription
+      variable: Topic.UserDescription
+      prompt: Please describe your enhancement suggestion. Include the problem it solves and the expected improvement.
+      entity: StringPrebuiltEntity
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Create a structured enhancement suggestion draft.
+        Use EXACTLY this format for structuredDraft:
+          "Title: [Draft] Enhancement suggestion for PMO app"
+          "Route: <sourceRoute or '/'>"
+          "Entity Type: <sourceEntityType or 'other'>"
+          "Entity Id: <sourceEntityId or 'Not provided'>"
+          ""
+          "Suggestion:"
+          <userDescription if non-empty, else: 'User did not provide a description.'>
+          ""
+          "Problem to solve:"
+          "[Add the current pain point.]"
+          ""
+          "Proposed outcome:"
+          "[Add expected improvement.]"
+          ""
+          "Priority and value:"
+          "[Add business value and urgency.]"
+        CONFIDENCE: 'low' if description is empty, 'medium' if <25 chars, 'high' if >=25 chars.
+        This is a DRAFT for user review. Do NOT imply the suggestion was submitted.
+        Remind the user to review and fill in the placeholders before submitting.
+      inputs:
+        sourceRoute: =Topic.SourceRoute
+        sourceEntityId: =Topic.SourceEntityId
+        sourceEntityType: =Topic.SourceEntityType
+        userDescription: =Topic.UserDescription
+      output: Topic.Draft
+    - kind: SendActivity
+      activity:
+        text: =Topic.Draft

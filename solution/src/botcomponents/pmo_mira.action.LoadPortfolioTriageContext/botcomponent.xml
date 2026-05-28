@@ -1,0 +1,10 @@
+<botcomponent schemaname="pmo_mira.action.LoadPortfolioTriageContext">
+  <componenttype>9</componenttype>
+  <iscustomizable>0</iscustomizable>
+  <name>Load Portfolio Triage Context</name>
+  <parentbotid>
+    <schemaname>pmo_mira</schemaname>
+  </parentbotid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</botcomponent>

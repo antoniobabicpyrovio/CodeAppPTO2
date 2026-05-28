@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Role id="{495ec709-6038-f111-88b4-6045bdd9f8fd}" name="CFR PMO Administrator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsCustomizable>1</IsCustomizable>
+  <IsAutoAssigned>0</IsAutoAssigned>
+  <Description>Full org-wide access to all CFR PMO intake requests and project team records. Stack with Project Owner.</Description>
+  <RolePrivileges>
+    <RolePrivilege name="prvAppendpmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvAppendpmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvAppendTopmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvAppendTopmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvAssignpmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvAssignpmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvCreatepmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvCreatepmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvCreateSharePointData" level="Global" />
+    <RolePrivilege name="prvDeletepmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvDeletepmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvReadPluginAssembly" level="Global" />
+    <RolePrivilege name="prvReadPluginType" level="Global" />
+    <RolePrivilege name="prvReadpmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvReadpmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvReadSdkMessage" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStep" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStepImage" level="Global" />
+    <RolePrivilege name="prvReadSharePointData" level="Global" />
+    <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvSharepmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvSharepmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvWritepmo_ProjectRequest" level="Global" />
+    <RolePrivilege name="prvWritepmo_ProjectTeam" level="Global" />
+    <RolePrivilege name="prvWriteSharePointData" level="Global" />
+  </RolePrivileges>
+</Role>

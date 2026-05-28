@@ -1,0 +1,12 @@
+<customapirequestparameter uniquename="RecordName">
+  <description default="Display name for Title column">
+    <label description="Display name for Title column" languagecode="1033" />
+  </description>
+  <displayname default="Record Name">
+    <label description="Record Name" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>pmo_UploadDocumentToSharePoint.RecordName</name>
+  <type>10</type>
+</customapirequestparameter>

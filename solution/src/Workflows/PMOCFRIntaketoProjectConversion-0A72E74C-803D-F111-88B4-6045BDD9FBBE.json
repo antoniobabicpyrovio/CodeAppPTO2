@@ -1,0 +1,125 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pmo_ProjectDataverse"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_a_PMO_request_is_approved": {
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "parameters": {
+              "subscriptionRequest/message": 3,
+              "subscriptionRequest/entityname": "pmo_projectrequest",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "pmo_status",
+              "subscriptionRequest/filterexpression": "pmo_status eq 893460023"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        }
+      },
+      "actions": {
+        "Check_status_is_Approved": {
+          "type": "If",
+          "runAfter": {},
+          "expression": {
+            "equals": [
+              "@triggerBody()?['pmo_status']",
+              893460023
+            ]
+          },
+          "actions": {
+            "Create_msdyn_project": {
+              "type": "OpenApiConnection",
+              "runAfter": {},
+              "inputs": {
+                "parameters": {
+                  "entityName": "msdyn_projects",
+                  "item/msdyn_subject": "@triggerBody()?['pmo_name']",
+                  "item/msdyn_description": "@triggerBody()?['pmo_description']",
+                  "item/msdyn_scheduledstart": "@triggerBody()?['pmo_requestedstartdate']",
+                  "item/msdyn_finish": "@triggerBody()?['pmo_targetcompletiondate']",
+                  "item/msdyn_calendarid": "75f05144-1cb0-f011-bbd3-6045bdeb6f62",
+                  "item/msdyn_workhourtemplate@odata.bind": "/msdyn_workhourstemplates(71f05144-1cb0-f011-bbd3-6045bdeb6f62)",
+                  "item/msdyn_contractorganizationalunitid@odata.bind": "/msdyn_organizationalunits(67f05144-1cb0-f011-bbd3-6045bdeb6f62)",
+                  "item/msdyn_projectmanager@odata.bind": "@concat('/systemusers(', triggerBody()?['_pmo_requestedby_value'], ')')",
+                  "item/msdyn_schedulemode": 192350001,
+                  "item/msdyn_copy_teammembers_options": 0,
+                  "item/msdyn_dayspermonth": 20,
+                  "item/msdyn_hoursperday": 8,
+                  "item/msdyn_hoursperweek": 40
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "CreateRecord",
+                  "connectionName": "shared_commondataserviceforapps"
+                }
+              }
+            },
+            "Update_request_converted": {
+              "type": "OpenApiConnection",
+              "runAfter": {
+                "Create_msdyn_project": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "parameters": {
+                  "entityName": "pmo_projectrequests",
+                  "recordId": "@triggerBody()?['pmo_projectrequestid']",
+                  "item/pmo_status": 893460025,
+                  "item/pmo_converteddate": "@utcNow()",
+                  "item/pmo_convertedproject@odata.bind": "@concat('/msdyn_projects(', outputs('Create_msdyn_project')?['body/msdyn_projectid'], ')')"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "UpdateRecord",
+                  "connectionName": "shared_commondataserviceforapps"
+                }
+              }
+            }
+          },
+          "else": {
+            "actions": {
+              "Terminate_not_approved": {
+                "type": "Terminate",
+                "runAfter": {},
+                "inputs": {
+                  "runStatus": "Cancelled"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,122 @@
+# Copilot Studio topic — draft-weekly-status-report
+#
+# MIRRORS: app/src/ai/topics/draftWeeklyStatusReport.ts
+# OUTPUT CONTRACT: StatusReportDraft (app/src/ai/contracts.ts)
+# MODE: draft (user must review and edit before saving — no direct writes)
+#
+# TRIGGER: User requests a draft status report for their project.
+# CONTEXT: Requires active project page context (projectId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - "draft weekly status report"
+#   - "write a status report"
+#   - "generate status update"
+#   - "create weekly update"
+#   - "draft project status"
+#   - "help me write the weekly status"
+#
+# DATA SOURCES (2 actions in sequence):
+#   1. load-project-context    → project record, risks, issues
+#   2. load-status-context     → prior status reports (carry-forward source)
+#
+# DRAFT GENERATION RULES (from draftWeeklyStatusReport.ts):
+#
+# Accomplished Activities:
+#   - Progress % from msdyn_progress (normalized to 0-100)
+#   - Prior report carry-forward: top 2 lines from mostRecent.msdyn_plannedactivities
+#   - Closed risks this period: risks where statecode recently changed to 1
+#   - Resolved issues this period: issues where statecode recently changed to 1
+#   Format: "Progress: X%. [carried prior planned items as accomplished]. [Closed N risks / resolved N issues.]"
+#
+# Planned Activities:
+#   - Finish date from msdyn_scheduledend
+#   - Open risks: risks where statecode=0, ordered by severity (high first)
+#   - Open issues: issues where statecode=0
+#   - Health-gated PMO language:
+#     - Off Track: "PMO checkpoint required before next milestone."
+#     - At Risk: "Team to review blockers by end of week."
+#     - On Track: standard next-week planning language
+#
+# Additional Comments:
+#   - High-priority issues with overdue dates → surface explicitly
+#   - Health status context if not On Track
+#
+# Confidence scoring (deriveConfidence in draftWeeklyStatusReport.ts):
+#   progressKnown:   +1 if msdyn_progress > 0
+#   priorContext:    +1 if mostRecent exists
+#   risksAvailable:  +1 if risks loaded
+#   issuesAvailable: +1 if issues loaded
+#   Score 4 = high, 2-3 = medium, 0-1 = low
+#
+# OUTPUT STRUCTURE (matches StatusReportDraft in contracts.ts):
+#   topicId:               'draft-weekly-status-report'
+#   mode:                  'draft'
+#   projectId:             <from input>
+#   projectName:           msdyn_project.msdyn_subject
+#   reportingPeriod:       current week ISO range (Mon–Sun)
+#   accomplishedActivities: drafted string (editable by user)
+#   plannedActivities:     drafted string (editable by user)
+#   additionalComments:    drafted string (editable by user)
+#   sourceSignals:         string array summarising data sources used
+#   sourceStatus:          per-source status array
+#   confidence:            'high' | 'medium' | 'low'
+#   generatedAt:           ISO timestamp
+#
+# SAFETY RULES:
+#   Draft only. User MUST review and edit before any save action.
+#   Do NOT trigger any Dataverse write from this topic.
+#   Include a review reminder in the response.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Draft Weekly Status Report
+    triggerQueries:
+      - draft weekly status report
+      - write a status report
+      - generate status update
+      - create weekly update
+      - draft project status
+      - help me write the weekly status
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        risks: Topic.Risks
+        issues: Topic.Issues
+    - kind: InvokeAction
+      actionName: pmo_LoadStatusContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        reports: Topic.StatusReports
+        mostRecent: Topic.MostRecentReport
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Generate a draft weekly status report for the project below.
+        Health code mapping: 189330000 = "On Track", 189330001 = "At Risk", 189330002 = "Off Track".
+        ACCOMPLISHED: Use progress% + prior planned items (carry-forward top 2 lines from prior report) +
+          closed/resolved risks and issues.
+        PLANNED: Use finish date + open risks + open issues + health-gated PMO checkpoint language.
+        COMMENTS: Surface high-priority overdue issues + health context if not On Track.
+        Apply confidence scoring: progressKnown/priorContext/risksAvailable/issuesAvailable.
+        Return three separate editable sections: accomplishedActivities, plannedActivities, additionalComments.
+        IMPORTANT: This is a DRAFT for user review. Include a reminder that the user must review before saving.
+        No direct writes — draft only.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        risks: =Topic.Risks
+        issues: =Topic.Issues
+        mostRecentReport: =Topic.MostRecentReport
+      output: Topic.Draft
+    - kind: SendActivity
+      activity:
+        text: =Topic.Draft

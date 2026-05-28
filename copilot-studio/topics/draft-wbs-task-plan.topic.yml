@@ -1,0 +1,107 @@
+# Copilot Studio topic — draft-wbs-task-plan
+#
+# MIRRORS: app/src/ai/topics/draftWbsTaskPlan.ts
+# OUTPUT CONTRACT: WbsTaskPlanDraft (app/src/ai/contracts.ts)
+# MODE: draft (user must review and validate owners/dates before use — no direct writes)
+#
+# TRIGGER: User requests a draft WBS task plan for their project.
+# CONTEXT: Requires active project page context (projectId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - "draft wbs task plan"
+#   - "create task plan"
+#   - "work breakdown structure"
+#   - "project task breakdown"
+#   - "give me a task list for this project"
+#   - "draft task structure"
+#
+# PLANNING ASSUMPTIONS (deterministic, always include exactly these 3):
+#   1. "Scope and priority remain stable during the next delivery window."
+#   2. "Current project health and open blockers are reflected in PMO data."
+#   3. "Final task owners and durations must be confirmed by delivery leads."
+#
+# DRAFT TASKS STRUCTURE (from draftWbsTaskPlan.ts — buildDraftTasks):
+#   Section 1: Discovery and Planning
+#     - Confirm scope baseline and delivery assumptions.
+#     - Validate stakeholders, dependencies, and milestone dates.
+#   Section 2: Execution
+#     - Execute prioritized work packages for current sprint window.
+#     - Track progress, risks, and issues in weekly cadence.
+#   Section 3: Validation and Handover
+#     - Validate deliverables against acceptance criteria.
+#     - Prepare stakeholder handoff and operational readiness.
+#   Risk and issue focus line:
+#     "Risk and issue focus: N open risk(s), N open issue(s)."
+#     N = counts of active risks/issues (statecode=0)
+#
+# OUTPUT STRUCTURE (matches WbsTaskPlanDraft in contracts.ts):
+#   topicId:              'draft-wbs-task-plan'
+#   mode:                 'draft'
+#   projectId:            <from input>
+#   projectName:          msdyn_project.msdyn_subject
+#   planningAssumptions:  string array (3 deterministic items above)
+#   draftTasks:           multi-line string (3-section structure + risk/issue focus line)
+#   sourceStatus:         per-source status array
+#   confidence:           'medium' (default) | 'low' (any source failed)
+#   generatedAt:          ISO timestamp
+#
+# SAFETY RULES:
+#   Draft only. User MUST review and validate task owners and durations before use.
+#   Do NOT trigger any Dataverse write from this topic.
+#   Include a review reminder in the response.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Draft WBS Task Plan
+    triggerQueries:
+      - draft wbs task plan
+      - create task plan
+      - work breakdown structure
+      - project task breakdown
+      - give me a task list for this project
+      - draft task structure
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        risks: Topic.Risks
+        issues: Topic.Issues
+        statusReports: Topic.StatusReports
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Generate a draft WBS task plan for the project below.
+        PLANNING ASSUMPTIONS — always include exactly:
+          1. "Scope and priority remain stable during the next delivery window."
+          2. "Current project health and open blockers are reflected in PMO data."
+          3. "Final task owners and durations must be confirmed by delivery leads."
+        DRAFT TASKS — use this structure:
+          1. Discovery and Planning
+             - Confirm scope baseline and delivery assumptions.
+             - Validate stakeholders, dependencies, and milestone dates.
+          2. Execution
+             - Execute prioritized work packages for current sprint window.
+             - Track progress, risks, and issues in weekly cadence.
+          3. Validation and Handover
+             - Validate deliverables against acceptance criteria.
+             - Prepare stakeholder handoff and operational readiness.
+          Then add: "Risk and issue focus: N open risk(s), N open issue(s)."
+          (N = counts of items with statecode=0)
+        Return planningAssumptions (array of 3) and draftTasks (multi-line string).
+        IMPORTANT: This is a DRAFT. Remind user to validate owners and dates. No writes.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        risks: =Topic.Risks
+        issues: =Topic.Issues
+      output: Topic.Draft
+    - kind: SendActivity
+      activity:
+        text: =Topic.Draft

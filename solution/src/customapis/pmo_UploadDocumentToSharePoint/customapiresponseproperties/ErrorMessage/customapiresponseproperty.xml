@@ -1,0 +1,11 @@
+<customapiresponseproperty uniquename="ErrorMessage">
+  <description default="Error detail if failed">
+    <label description="Error detail if failed" languagecode="1033" />
+  </description>
+  <displayname default="Error Message">
+    <label description="Error Message" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>pmo_UploadDocumentToSharePoint.ErrorMessage</name>
+  <type>10</type>
+</customapiresponseproperty>

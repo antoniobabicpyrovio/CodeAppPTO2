@@ -1,0 +1,83 @@
+# Copilot Studio topic — what-is-blocking-this-project-right-now
+#
+# MIRRORS: app/src/ai/topics/whatIsBlockingThisProjectRightNow.ts
+# OUTPUT CONTRACT: ProjectBlockersAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# TRIGGER: User asks what is blocking the active project right now.
+# CONTEXT: Requires active project page context (projectId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - what is blocking this project right now
+#   - what is blocking this project
+#   - what blockers do we have right now
+#   - what is stopping delivery right now
+#
+# DATA SOURCES:
+#   1. pmo_LoadProjectContext
+#   2. pmo_LoadProjectOpenTasksContext
+#
+# BLOCKER RULES (from whatIsBlockingThisProjectRightNow.ts):
+#   - Active issues are primary blocker candidates
+#   - Overdue or unassigned urgent tasks are execution blockers
+#   - Escalated high-exposure or overdue risks may be blocker candidates
+#   - If structured blockers are weak but schedule health is Off Track, surface schedule friction explicitly
+#   - Cap ranked blockers at 6
+#
+# SAFETY RULES:
+#   Advisory only. No mutation or silent escalation from this topic.
+
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: What Is Blocking This Project Right Now
+    triggerQueries:
+      - what is blocking this project right now
+      - what is blocking this project
+      - what blockers do we have right now
+      - what is stopping delivery right now
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        risks: Topic.Risks
+        issues: Topic.Issues
+        statusReports: Topic.StatusReports
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectOpenTasksContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        tasks: Topic.Tasks
+        assignments: Topic.Assignments
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Identify what is blocking the active project right now.
+        Use ONLY the provided project, issue, risk, task, and assignment data.
+        PRIORITIZE:
+          - active issues
+          - overdue or unassigned urgent tasks
+          - escalated risks with high exposure or overdue mitigation
+          - schedule friction if the project is already Off Track
+        Return:
+          - a one-sentence blocker summary
+          - up to 6 blockerItems with category, title, detail, severity, and recommendedAction
+        Advisory only — no write-intent output.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        risks: =Topic.Risks
+        issues: =Topic.Issues
+        tasks: =Topic.Tasks
+        assignments: =Topic.Assignments
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory

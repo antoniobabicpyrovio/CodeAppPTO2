@@ -1,0 +1,97 @@
+# Copilot Studio topic — explain-project-health
+#
+# MIRRORS: app/src/ai/topics/explainProjectHealth.ts
+# OUTPUT CONTRACT: ProjectHealthAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# TRIGGER: User asks about project health, delivery signals, or overall project status.
+# CONTEXT: Requires active project page context (projectId passed from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - "explain project health"
+#   - "how is my project doing"
+#   - "what is the project status"
+#   - "show project health signals"
+#   - "is this project on track"
+#   - "what are the risks on this project"
+#   - "project delivery status"
+#
+# GROUNDING RULES (from app/src/ai/grounding/signals.ts):
+#   Health codes:     189330000 = On Track | 189330001 = At Risk | 189330002 = Off Track
+#   Signal fields:    proj_overallhealth, proj_schedulehealth, proj_efforthealth, proj_financialhealth
+#   Progress:         msdyn_progress (normalize 0–1 to 0–100%)
+#   Active risks:     statecode === 0, count → ok (0), warn (1–2), critical (>2)
+#   Active issues:    statecode === 0, count → ok (0), warn (1–2), critical (>2)
+#
+# ATTENTION ITEM LOGIC (from explainProjectHealth.ts buildAttentionItems):
+#   1. If overall health is Off Track → "Overall project health is Off Track. Immediate escalation warranted."
+#   2. High-exposure risks (severity = High): "N high-severity risk(s) require mitigation."
+#   3. Overdue issues (statecode=0 AND duedate < today): "N overdue issue(s) need resolution."
+#   4. Schedule lag (schedule health != On Track AND progress < expected): "Schedule is lagging..."
+#
+# OUTPUT STRUCTURE (matches ProjectHealthAdvisory in contracts.ts):
+#   topicId:        'explain-project-health'
+#   mode:           'advisory'
+#   projectId:      <from input>
+#   projectName:    msdyn_project.msdyn_subject
+#   overallHealth:  resolved health label
+#   healthSignals:  array of { dimension, value, status } — 7 signals (see signals.ts)
+#   summary:        generated narrative (1–2 sentences, specific to project name + signals)
+#   attentionItems: string array from attention item logic above
+#   sourceStatus:   { source: 'project'|'risks'|'issues'|'statusReports', state, detail }
+#   confidence:     'high' | 'medium' | 'low' (based on data completeness)
+#   generatedAt:    ISO timestamp
+#
+# SAFETY RULES:
+#   Advisory only. Do NOT generate write-intent payloads. Do NOT suggest direct mutations.
+#   If data is partial, surface sourceStatus and reduce confidence accordingly.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Explain Project Health
+    triggerQueries:
+      - explain project health
+      - how is my project doing
+      - what is the project status
+      - show project health signals
+      - is this project on track
+      - what are the risks on this project
+      - project delivery status
+  actions:
+    # Step 1: Capture project ID from app context variable (set by MiraPanel integration)
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    # Step 2: Load project context via Dataverse action
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        risks: Topic.Risks
+        issues: Topic.Issues
+        statusReports: Topic.StatusReports
+    # Step 3: Generate advisory (generative AI response grounded in loaded context)
+    # GROUNDING: Use health codes, signal fields, attention item logic specified above
+    # OUTPUT: Must match ProjectHealthAdvisory contract
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Explain the health of the project below.
+        Use ONLY the data provided. Do NOT invent data. Use exactly the health label mapping:
+        code 189330000 = "On Track", 189330001 = "At Risk", 189330002 = "Off Track".
+        Apply the attention item logic defined in the topic spec.
+        Return a structured health summary with: overall health label, up to 7 signals,
+        a specific 1-2 sentence summary using the project name, and attention items.
+        Advisory only — no write suggestions.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        risks: =Topic.Risks
+        issues: =Topic.Issues
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory

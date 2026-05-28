@@ -1,0 +1,27 @@
+# ─── Environment-pinned files ────────────────────────────────────────────────
+# These files contain environment-specific values (GUIDs, URLs, IDs) that differ
+# between main (DEV), uat, and production branches.
+#
+# merge=ours means: when merging a lower branch INTO this branch (e.g. main → uat),
+# git automatically keeps THIS branch's version of the file rather than the
+# incoming branch's DEV values.
+#
+# To apply: git config merge.ours.driver true  (run once per clone)
+
+# power.config.json holds appId + environmentId, which the pac CLI writes back
+# automatically on `pac code push` per environment. Always env-pinned.
+app/power.config.json                                           merge=ours
+
+# Entire solution/src/ tree pinned on uat/prod. On DEV (main), solution/src/
+# is the authoritative unpacked source — refreshed from the maker portal via
+# `pac solution export` + `pac solution unpack` and committed. On uat/prod
+# the unpacked source is a *snapshot* used for diffing/inspection; the actual
+# deploy uses a managed zip exported from DEV and patched by
+# scripts/patch-managed-solution-for-prod.py. Pinning the whole tree to
+# merge=ours stops every main→prod merge from churning through hundreds of
+# XML conflicts on files we don't redeploy from prod anyway.
+#
+# Note: this rule only takes effect on uat/prod (where prior snapshots exist).
+# On main this attribute is harmless — main is the source of truth and edits
+# come from re-export, not merges.
+solution/src/**                                                 merge=ours

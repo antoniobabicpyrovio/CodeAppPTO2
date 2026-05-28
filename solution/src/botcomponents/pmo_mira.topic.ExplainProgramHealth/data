@@ -1,0 +1,31 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Explain Program Health
+    triggerQueries:
+      - explain program health
+      - how is the program doing
+      - program health summary
+      - show program rollup
+      - which projects are at risk in this program
+      - program delivery status
+      - how are projects performing in this program
+  actions:
+    - kind: SetVariable
+      id: set_programId
+      variable: Topic.ProgramId
+      value: =System.Activity.ChannelData.programId
+    - kind: BeginDialog
+      id: invoke_loadProgramContext
+      displayName: Load Program Context
+      input: {}
+      dialog: pmo_mira.action.LoadProgramContextEnriched
+    - kind: SendActivity
+      id: sendActivity_advisory
+      activity:
+        text: I have analyzed the program context. Check the program health signals in the PMO app for detailed advisory.
+
+inputType: {}
+outputType: {}

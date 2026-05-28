@@ -1,0 +1,100 @@
+# Copilot Studio topic — improve-status-report-draft
+#
+# MIRRORS: app/src/ai/topics/improveStatusReportDraft.ts
+# OUTPUT CONTRACT: ImprovedStatusReportDraft (app/src/ai/contracts.ts)
+# MODE: draft (user reviews improved output before saving — no direct writes)
+#
+# TRIGGER: User wants to improve an existing status report draft.
+# CONTEXT: User-provided draft text only. No Dataverse action required.
+#
+# INTENT TRIGGER PHRASES:
+#   - "improve status report"
+#   - "refine status draft"
+#   - "polish weekly status"
+#   - "rewrite project update"
+#   - "improve my draft"
+#   - "clean up my status report"
+#
+# IMPROVEMENT LOGIC (from improveStatusReportDraft.ts — improveText):
+#   If originalDraft is empty:
+#     Return structured placeholder template:
+#       "Accomplished Activities:\n- [Add completed work items]\n\nPlanned Activities:\
+#       \n- [Add upcoming work items]\n\nAdditional Comments:\n- [Add risks, issues, and escalation notes]"
+#   If originalDraft has content:
+#     Wrap into PMO 3-section structure:
+#       "Accomplished Activities:\n- <original text>\n\nPlanned Activities:\
+#       \n- [Add the next planned activities and owners]\n\nAdditional Comments:\
+#       \n- [Highlight risks, issues, and required support]"
+#
+# IMPROVEMENT NOTES (deterministic, always include these 3):
+#   1. "Structured the draft into standard PMO sections."
+#   2. "Added placeholders for ownership and next-step clarity."
+#   3. "Preserved user narrative while improving readability."
+#
+# CONFIDENCE:
+#   'medium' if originalDraft has content | 'low' if originalDraft is empty
+#
+# OUTPUT STRUCTURE (matches ImprovedStatusReportDraft in contracts.ts):
+#   topicId:          'improve-status-report-draft'
+#   mode:             'draft'
+#   projectId:        optional (from channel data if available)
+#   projectName:      optional (from channel data if available)
+#   originalDraft:    the user's original input text
+#   improvedDraft:    restructured PMO 3-section output
+#   improvementNotes: string array (3 deterministic notes above)
+#   sourceStatus:     [{ source: 'user-draft', state: 'ok' | 'missing' }]
+#   confidence:       'medium' | 'low'
+#   generatedAt:      ISO timestamp
+#
+# SAFETY RULES:
+#   Draft only. User must review and confirm the improved output before saving.
+#   No Dataverse writes from this topic.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Improve Status Report Draft
+    triggerQueries:
+      - improve status report
+      - refine status draft
+      - polish weekly status
+      - rewrite project update
+      - improve my draft
+      - clean up my status report
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: SetVariable
+      variable: Topic.ProjectName
+      value: =System.Activity.ChannelData.entityName
+    - kind: Question
+      id: question_originalDraft
+      variable: Topic.OriginalDraft
+      prompt: Paste your current status report draft. Mira will restructure it into standard PMO sections.
+      entity: StringPrebuiltEntity
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Improve the provided status report draft.
+        STRUCTURE RULE:
+          If originalDraft is empty — return a structured placeholder:
+            "Accomplished Activities:\n- [Add completed work items]\n\nPlanned Activities:
+            \n- [Add upcoming work items]\n\nAdditional Comments:\n- [Add risks, issues, and escalation notes]"
+          If originalDraft has content — wrap into:
+            "Accomplished Activities:\n- <original text>\n\nPlanned Activities:
+            \n- [Add the next planned activities and owners]\n\nAdditional Comments:
+            \n- [Highlight risks, issues, and required support]"
+        IMPROVEMENT NOTES — always include exactly:
+          1. "Structured the draft into standard PMO sections."
+          2. "Added placeholders for ownership and next-step clarity."
+          3. "Preserved user narrative while improving readability."
+        Return: improvedDraft (string) and improvementNotes (array of 3).
+        This is a draft for user review. Do not trigger any writes.
+      inputs:
+        originalDraft: =Topic.OriginalDraft
+      output: Topic.ImprovedDraft
+    - kind: SendActivity
+      activity:
+        text: =Topic.ImprovedDraft

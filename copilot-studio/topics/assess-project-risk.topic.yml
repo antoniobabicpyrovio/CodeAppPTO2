@@ -1,0 +1,107 @@
+# Copilot Studio topic — assess-project-risk
+#
+# MIRRORS: app/src/ai/topics/assessProjectRisk.ts
+# OUTPUT CONTRACT: ProjectRiskAssessmentAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# TRIGGER: User requests a risk assessment for their project.
+# CONTEXT: Requires active project page context (projectId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - "assess project risk"
+#   - "risk assessment"
+#   - "project risk summary"
+#   - "what are the top risks"
+#   - "risk mitigation guidance"
+#   - "how risky is this project"
+#   - "show risk exposure"
+#
+# SCORING ALGORITHM (from assessProjectRisk.ts — calcRiskScore):
+#   EXACT values — do NOT deviate:
+#   Off Track overall health (code 189330002):  +5 points
+#   At Risk overall health (code 189330001):    +3 points
+#   Active risks count (statecode=0):           +1 per risk, capped at 5 points
+#   Active issues count (statecode=0):          +1 per issue, capped at 4 points
+#   Maximum score: 15
+#
+# TOP RISKS LOGIC (from assessProjectRisk.ts):
+#   Always include:
+#   1. "N active risk(s) require mitigation tracking."
+#   2. "N open issue(s) may degrade delivery confidence."
+#   If schedule health != On Track (189330000):
+#   3. "Schedule health signal indicates elevated timeline risk."
+#
+# MITIGATION RECOMMENDATIONS (deterministic, always include these 3):
+#   1. "Prioritize top risks by impact and assign dated mitigation owners."
+#   2. "Review open issues in weekly PMO checkpoint and close stale blockers."
+#   3. "Align schedule recovery actions with near-term milestone commitments."
+#
+# OUTPUT STRUCTURE (matches ProjectRiskAssessmentAdvisory in contracts.ts):
+#   topicId:                  'assess-project-risk'
+#   mode:                     'advisory'
+#   projectId:                <from input>
+#   projectName:              msdyn_project.msdyn_subject
+#   riskScore:                integer 0–15 (from calcRiskScore)
+#   topRisks:                 string array (from top risks logic above)
+#   mitigationRecommendations: string array (3 deterministic items above)
+#   sourceStatus:             per-source status array
+#   confidence:               'high' (all sources ok) | 'low' (any source failed)
+#   generatedAt:              ISO timestamp
+#
+# SAFETY RULES:
+#   Advisory only. No write-intent payloads. No mutation suggestions.
+#   If any data source failed, set confidence to 'low' and surface in sourceStatus.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Assess Project Risk
+    triggerQueries:
+      - assess project risk
+      - risk assessment
+      - project risk summary
+      - what are the top risks
+      - risk mitigation guidance
+      - how risky is this project
+      - show risk exposure
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        risks: Topic.Risks
+        issues: Topic.Issues
+        statusReports: Topic.StatusReports
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Assess the risk of the project below.
+        Health code mapping: 189330000 = "On Track", 189330001 = "At Risk", 189330002 = "Off Track".
+        SCORING — apply EXACTLY these values to calculate riskScore (max 15):
+          Off Track (code 189330002): +5, At Risk (code 189330001): +3
+          Active risks (statecode=0): +1 each, capped at 5
+          Active issues (statecode=0): +1 each, capped at 4
+        TOP RISKS — always include:
+          1. "N active risk(s) require mitigation tracking."
+          2. "N open issue(s) may degrade delivery confidence."
+          If schedule health code != 189330000: add "Schedule health signal indicates elevated timeline risk."
+        MITIGATION RECOMMENDATIONS — always include exactly:
+          1. "Prioritize top risks by impact and assign dated mitigation owners."
+          2. "Review open issues in weekly PMO checkpoint and close stale blockers."
+          3. "Align schedule recovery actions with near-term milestone commitments."
+        Return: riskScore (0-15), topRisks array, mitigationRecommendations array.
+        Advisory only — no write-intent output.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        risks: =Topic.Risks
+        issues: =Topic.Issues
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory

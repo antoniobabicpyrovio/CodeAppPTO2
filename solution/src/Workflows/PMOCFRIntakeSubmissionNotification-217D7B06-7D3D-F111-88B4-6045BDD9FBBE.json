@@ -1,0 +1,227 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pmo_ProjectDataverse"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      },
+      "shared_office365_1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pmo_sharedoffice365_21642"
+        },
+        "api": {
+          "name": "shared_office365"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_a_PMO_request_status_changes": {
+          "metadata": {
+            "operationMetadataId": "cfce0a99-ef19-4efa-acfe-b37144f68355"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 3,
+              "subscriptionRequest/entityname": "pmo_projectrequest",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "pmo_status"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Get_requester_details": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "101d1b51-b47a-4cd7-94d5-33b550b71b19"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "systemusers",
+              "recordId": "@triggerBody()?['_pmo_requestedby_value']",
+              "$select": "internalemailaddress,fullname"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Switch_on_status": {
+          "runAfter": {
+            "Get_requester_details": [
+              "Succeeded"
+            ]
+          },
+          "cases": {
+            "Case_Submitted": {
+              "case": 893460021,
+              "actions": {
+                "Send_submission_confirmation": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "94689c5a-42a9-4be4-a8f3-2fc6c0eb9528"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_office365_1",
+                      "operationId": "SendEmailV2",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                    },
+                    "parameters": {
+                      "emailMessage/To": "@outputs('Get_requester_details')?['body/internalemailaddress']",
+                      "emailMessage/Subject": "PMO Request Received — @{triggerBody()?['pmo_name']}",
+                      "emailMessage/Body": "<p>Dear @{outputs('Get_requester_details')?['body/fullname']},</p><p>Your PMO request has been received and is now in the intake queue for review.</p><p><strong>Request:</strong> @{triggerBody()?['pmo_name']}<br/><strong>Status:</strong> Submitted<br/><strong>Auto-Number:</strong> @{triggerBody()?['pmo_requestid']}</p><p>A PMO coordinator will review your request and may reach out with questions. You can view your request status in the PMO app at any time.</p><p>Thank you,<br/>CVS Health PMO</p>"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Case_Approved": {
+              "case": 893460023,
+              "actions": {
+                "Send_approval_notification": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "1e6b3ae0-3529-47e8-a875-7ff531d38ac0"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_office365_1",
+                      "operationId": "SendEmailV2",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                    },
+                    "parameters": {
+                      "emailMessage/To": "@outputs('Get_requester_details')?['body/internalemailaddress']",
+                      "emailMessage/Subject": "PMO Request Approved — @{triggerBody()?['pmo_name']}",
+                      "emailMessage/Body": "<p>Dear @{outputs('Get_requester_details')?['body/fullname']},</p><p>Your PMO request has been <strong>approved</strong> and a project will be created for it shortly.</p><p><strong>Request:</strong> @{triggerBody()?['pmo_name']}<br/><strong>Status:</strong> Approved</p><p>Thank you,<br/>CVS Health PMO</p>"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Case_Rejected": {
+              "case": 893460024,
+              "actions": {
+                "Send_rejection_notification": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "b8acb275-5ff7-48a8-982d-d65ea498b10b"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_office365_1",
+                      "operationId": "SendEmailV2",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                    },
+                    "parameters": {
+                      "emailMessage/To": "@outputs('Get_requester_details')?['body/internalemailaddress']",
+                      "emailMessage/Subject": "PMO Request Not Approved — @{triggerBody()?['pmo_name']}",
+                      "emailMessage/Body": "<p>Dear @{outputs('Get_requester_details')?['body/fullname']},</p><p>After review, your PMO request has <strong>not been approved</strong> at this time.</p><p><strong>Request:</strong> @{triggerBody()?['pmo_name']}<br/><strong>Reason:</strong> @{triggerBody()?['pmo_rejectionreason']}</p><p>If you have questions, please contact the PMO team directly.</p><p>Thank you,<br/>CVS Health PMO</p>"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Case_AwaitingClarification": {
+              "case": 893460026,
+              "actions": {
+                "Send_clarification_request": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "bf9c8673-1ea7-4e8c-8731-1e966328a9cf"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_office365_1",
+                      "operationId": "SendEmailV2",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                    },
+                    "parameters": {
+                      "emailMessage/To": "@outputs('Get_requester_details')?['body/internalemailaddress']",
+                      "emailMessage/Subject": "Additional Information Needed — @{triggerBody()?['pmo_name']}",
+                      "emailMessage/Body": "<p>Dear @{outputs('Get_requester_details')?['body/fullname']},</p><p>The PMO team has reviewed your request and needs additional information before proceeding.</p><p><strong>Request:</strong> @{triggerBody()?['pmo_name']}<br/><strong>Question from PMO:</strong> @{triggerBody()?['pmo_clarificationquestion']}</p><p>Please log in to the PMO app to provide your response.</p><p>Thank you,<br/>CVS Health PMO</p>"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Case_Redirected": {
+              "case": 893460028,
+              "actions": {
+                "Send_redirect_notification": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "93edfa2e-42c8-473e-a207-bb7571fee2a1"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_office365_1",
+                      "operationId": "SendEmailV2",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                    },
+                    "parameters": {
+                      "emailMessage/To": "@outputs('Get_requester_details')?['body/internalemailaddress']",
+                      "emailMessage/Subject": "PMO Request Redirected — @{triggerBody()?['pmo_name']}",
+                      "emailMessage/Body": "<p>Dear @{outputs('Get_requester_details')?['body/fullname']},</p><p>Your request has been redirected to the appropriate team for handling.</p><p><strong>Request:</strong> @{triggerBody()?['pmo_name']}<br/><strong>Triage Notes:</strong> @{triggerBody()?['pmo_triagecomments']}</p><p>Thank you,<br/>CVS Health PMO</p>"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "actions": {}
+          },
+          "expression": "@triggerBody()?['pmo_status']",
+          "metadata": {
+            "operationMetadataId": "de5812a8-2f9a-42b1-b6eb-16e57f74c0b8"
+          },
+          "type": "Switch"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

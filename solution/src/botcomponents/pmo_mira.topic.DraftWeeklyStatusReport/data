@@ -1,0 +1,35 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Draft Weekly Status Report
+    triggerQueries:
+      - draft weekly status report
+      - write a status report
+      - generate status update
+      - create weekly update
+      - draft project status
+      - help me write the weekly status
+  actions:
+    - kind: SetVariable
+      id: set_projectId
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: BeginDialog
+      id: invoke_loadProjectContext
+      displayName: Load Project Context
+      input: {}
+      dialog: pmo_mira.action.LoadProjectContext
+    - kind: BeginDialog
+      id: invoke_loadStatusContext
+      displayName: Load Status Context
+      input: {}
+      dialog: pmo_mira.action.LoadStatusContext
+    - kind: SendActivity
+      id: sendActivity_draft
+      activity:
+        text: I have loaded the project and status context. A full draft will be available once the AI advisory pipeline is configured. Please use the status report form in the PMO app to submit your update.
+
+inputType: {}
+outputType: {}

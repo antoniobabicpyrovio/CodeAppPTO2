@@ -1,0 +1,92 @@
+# Copilot Studio topic — what-changed-since-last-status-report
+#
+# MIRRORS: app/src/ai/topics/whatChangedSinceLastStatusReport.ts
+# OUTPUT CONTRACT: StatusChangesAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# TRIGGER: User asks what changed since the last status report.
+# CONTEXT: Requires active project page context (projectId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - what changed since the last status report
+#   - what changed since our last update
+#   - compare current status to the last report
+#   - what is different since the last status update
+#
+# DATA SOURCES:
+#   1. pmo_LoadProjectContext
+#   2. pmo_LoadStatusContext
+#   3. pmo_LoadProjectOpenTasksContext
+#
+# COMPARISON RULES (from whatChangedSinceLastStatusReport.ts):
+#   - Baseline = most recent active status report date if available
+#   - New risks/issues = records created after the baseline
+#   - Always surface current overdue / due-soon / unassigned open-task pressure
+#   - If no baseline exists, state that a true delta cannot be computed yet
+#
+# SAFETY RULES:
+#   Advisory only. No write-intent output.
+
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: What Changed Since Last Status Report
+    triggerQueries:
+      - what changed since the last status report
+      - what changed since our last update
+      - compare current status to the last report
+      - what is different since the last status update
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        risks: Topic.Risks
+        issues: Topic.Issues
+        statusReports: Topic.ProjectStatusReports
+    - kind: InvokeAction
+      actionName: pmo_LoadStatusContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        reports: Topic.StatusReports
+        mostRecent: Topic.MostRecentReport
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectOpenTasksContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        tasks: Topic.Tasks
+        assignments: Topic.Assignments
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Compare current structured project signals to the most recent active status report.
+        Use ONLY the provided project, status, risk, issue, task, and assignment context.
+        RULES:
+          - baseline date = most recent active status report date if available
+          - new risks/issues = records created after that baseline
+          - always surface current overdue or unassigned task pressure
+          - if no baseline exists, say Mira cannot compute a true since-last-report delta yet
+        Return:
+          - baselineDate when available
+          - a one-sentence comparison summary
+          - structured changeItems with category + summary
+        Advisory only — no write-intent output.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        risks: =Topic.Risks
+        issues: =Topic.Issues
+        mostRecentReport: =Topic.MostRecentReport
+        tasks: =Topic.Tasks
+        assignments: =Topic.Assignments
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory

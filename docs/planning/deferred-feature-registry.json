@@ -1,0 +1,1753 @@
+{
+  "registryVersion": "2.0.0",
+  "lastUpdatedUtc": "2026-04-23T21:00:00Z",
+  "repository": {
+    "name": "corp-fin-bi-pmo-cfr-solution",
+    "owner": "cvs-health-source-code",
+    "defaultBranch": "main"
+  },
+  "items": [
+    {
+      "id": "dfr-001-a1b2c3d4",
+      "canonicalKey": "label-rename-in-app",
+      "itemType": "feature-implementation",
+      "title": "Label rename in-app",
+      "lifecycleState": "implemented",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "Users cannot rename project labels from within the PMO app. Labels are auto-created by Planner with default color-based names (Pink, Red, Yellow, etc.) and can only be renamed by opening Planner directly. This forces users out of the PMO app for a routine label management action.",
+      "proposedSolutionApproach": "Wire the existing useRenameLabel hook and PSS PssUpdateV1 wrapper (renameLabel in schedulingClient.ts) into the label picker UI in TaskDetailPanel. Add an inline edit or pencil-icon trigger next to each label in the \"+ Add label\" dropdown that allows the user to set msdyn_projectlabeltext via PSS update. The PSS wrapper and mutation hook are already built and exported \u00e2\u20ac\u201d only the UI binding is missing.",
+      "architecturalConsiderations": [
+        "PSS PssUpdateV1 on msdyn_projectlabel is the only supported write path for label rename (confirmed by MS docs: Labels support Update only, not Create or Delete)",
+        "useRenameLabel hook already exists in hooks/useProjectLabels.ts with optimistic cache update",
+        "renameLabel function already exists in lib/schedulingClient.ts",
+        "msdyn_projectlabeltext is the field to update",
+        "Labels are project-scoped (auto-created per project, 25 slots)"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "useRenameLabel hook implemented and exported",
+          "status": "complete"
+        },
+        {
+          "description": "renameLabel PSS wrapper implemented",
+          "status": "complete"
+        },
+        {
+          "description": "Label picker UI exists in TaskDetailPanel",
+          "status": "complete"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "PSS update on msdyn_projectlabel has not been explicitly validated via spike (only confirmed from MS docs listing it as supported for Update)",
+          "impact": "low",
+          "mitigation": "Low risk \u00e2\u20ac\u201d same PssUpdateV1 pattern used for all other field edits which are proven"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Implementation readiness",
+          "content": "The useRenameLabel hook is already built in hooks/useProjectLabels.ts with full optimistic cache update pattern. The renameLabel function in schedulingClient.ts sends msdyn_projectlabeltext via PssUpdateV1 on msdyn_projectlabel entity. The label picker UI in TaskDetailPanel currently shows labels in a dropdown with color dots. The only missing piece is a UI affordance (pencil icon or inline edit) to trigger the rename mutation. Effort is small because all data layer and mutation infrastructure is complete \u00e2\u20ac\u201d only the JSX/interaction layer needs to be added."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "Next sprint targeting label management improvements or when users request the ability to customize label names from within the PMO app.",
+        "targetCycleHint": "Next feature sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "The useRenameLabel hook is already built in hooks/useProjectLabels.ts with full optimistic cache update pattern. The renameLabel function in schedulingClient.ts sends msdyn_projectlabeltext via PssUpdateV1 on msdyn_projectlabel entity. The label picker UI in TaskDetailPanel currently shows labels in a dropdown with color dots. The only missing piece is a UI affordance (pencil icon or inline edit) to trigger the rename mutation. Effort is small because all data layer and mutation infrastructure is complete \u00e2\u20ac\u201d only the JSX/interaction layer needs to be added."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. All data layer infrastructure complete \u00e2\u20ac\u201d UI binding only.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "labels",
+        "small-effort",
+        "ui-only"
+      ],
+      "implementationNotes": "Implemented in Planner Parity Sprint session \u00e2\u20ac\u201d label rename wired into TaskDetailPanel via pencil-icon inline edit using useRenameLabel hook and PSS wrapper."
+    },
+    {
+      "id": "dfr-002-e5f6g7h8",
+      "canonicalKey": "label-chips-kanban-cards",
+      "itemType": "enhancement-request",
+      "title": "Label chips on Kanban board task cards",
+      "lifecycleState": "implemented",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "Labels assigned to a task are only visible when the task detail panel is open. The Kanban board cards (TaskRow) do not display any label indicators, making it impossible to see task categorization at a glance in the board view. Planner shows colored label dots on each card.",
+      "proposedSolutionApproach": "Thread label data from TaskWorkspace through BucketSection \u00e2\u2020\u2019 TaskRowTree \u00e2\u2020\u2019 TaskRow via a new taskLabelMap prop (same pattern as assignmentMap and dependencyMap). In TaskRow, render small colored dots or abbreviated label chips below the task title using the label color palette already defined in TaskDetailPanel.",
+      "architecturalConsiderations": [
+        "Requires adding a new prop to BucketSection, TaskRowTree (internal), and TaskRow interfaces",
+        "The label data (projectLabels + allTaskLabels) is already fetched in TaskDetailPanel hooks \u00e2\u20ac\u201d needs to be lifted to TaskWorkspace level",
+        "useProjectLabels and useProjectTaskLabels hooks would need to be called in TaskWorkspace or ProjectDetailPage and passed down",
+        "Color mapping (PLANNER_NAMES and PALETTE arrays) should be extracted to a shared constant instead of duplicated",
+        "Performance: allTaskLabels query fetches all task-to-label junctions with $top: 5000 \u00e2\u20ac\u201d acceptable for current project sizes"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Label data model and API reads implemented",
+          "status": "complete"
+        },
+        {
+          "description": "useProjectLabels and useProjectTaskLabels hooks implemented",
+          "status": "complete"
+        },
+        {
+          "description": "Color palette mapping defined",
+          "status": "complete"
+        },
+        {
+          "description": "Prop threading through BucketSection \u00e2\u2020\u2019 TaskRowTree \u00e2\u2020\u2019 TaskRow",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Adding another prop to the BucketSection \u00e2\u2020\u2019 TaskRowTree \u00e2\u2020\u2019 TaskRow chain increases prop drilling complexity",
+          "impact": "low",
+          "mitigation": "Consider extracting a React context for task metadata (labels, assignments, dependencies) in a future refactor"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Label infrastructure status",
+          "content": "The label assignment and display infrastructure is fully implemented in TaskDetailPanel. Project labels are fetched via useProjectLabels(projectId) from msdyn_projectlabels, and task-to-label junctions via useProjectTaskLabels(projectId) from msdyn_projecttasktolabels. The color palette maps msdyn_colorindex option set values (192350000-192350024) to CSS classes matching Planner's 25 default colors (Pink, Red, Yellow, Green, Blue, Purple, Bronze, Lime, Aqua, Gray, Silver, Brown, Cranberry, Orange, Peach, Marigold, Light green, Dark green, Teal, Light blue, Dark blue, Lavender, Plum, Light gray, Dark gray). The existing assignmentMap/dependencyMap threading pattern in TaskWorkspace provides the exact template for how to add taskLabelMap."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When board view usability is prioritized or when users report difficulty seeing label assignments without opening the detail panel.",
+        "targetCycleHint": "Next UI polish sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "The label assignment and display infrastructure is fully implemented in TaskDetailPanel. Project labels are fetched via useProjectLabels(projectId) from msdyn_projectlabels, and task-to-label junctions via useProjectTaskLabels(projectId) from msdyn_projecttasktolabels. The color palette maps msdyn_colorindex option set values (192350000-192350024) to CSS classes matching Planner's 25 default colors (Pink, Red, Yellow, Green, Blue, Purple, Bronze, Lime, Aqua, Gray, Silver, Brown, Cranberry, Orange, Peach, Marigold, Light green, Dark green, Teal, Light blue, Dark blue, Lavender, Plum, Light gray, Dark gray). The existing assignmentMap/dependencyMap threading pattern in TaskWorkspace provides the exact template for how to add taskLabelMap."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Data layer complete; requires prop threading through component hierarchy.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "labels",
+        "medium-effort",
+        "prop-threading"
+      ],
+      "implementationNotes": "Implemented in Planner Parity Sprint session \u00e2\u20ac\u201d taskLabelMap prop threaded through TaskWorkspace \u00e2\u2020\u2019 BucketSection \u00e2\u2020\u2019 TaskRowTree \u00e2\u2020\u2019 TaskRow; label chips rendered as named pill chips using labelColorClass and labelNameFor from labelPalette.ts."
+    },
+    {
+      "id": "dfr-003-i9j0k1l2",
+      "canonicalKey": "goal-linkage",
+      "itemType": "feature-implementation",
+      "title": "Goal linkage (project goals and task-to-goal association)",
+      "lifecycleState": "deferred",
+      "defermentRationale": "Deferred from Planner Task Parity Sprint. Entity schema for msdyn_projectgoal and msdyn_projecttasktogoal has not been discovered. Lower priority than core task editing, checklists, labels, and sprints.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        },
+        {
+          "label": "Project Schedule APIs \u00e2\u20ac\u201d Supported Operations",
+          "uri": "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-management/schedule-api-preview"
+        }
+      ],
+      "originalProblemStatement": "The PMO app has no visibility into project goals or the ability to associate tasks with goals. Planner Premium supports goals as a first-class concept, and the MS docs confirm msdyn_projectgoal and msdyn_projecttasktogoal as supported PSS scheduling entities with Create/Update/Delete support. Without goal linkage, users cannot track strategic alignment of tasks within the PMO app.",
+      "proposedSolutionApproach": "Register msdyn_projectgoals and msdyn_projecttasktogoals entity sets in DATAVERSE_SOURCES and power.config.json. Run schema discovery spikes (same S6c RelationshipDefinitions approach used for checklists and labels). Create TypeScript models, OData read APIs, PSS wrappers, TanStack Query hooks, and UI in TaskDetailPanel (goal selector) and potentially a project-level goal management panel.",
+      "architecturalConsiderations": [
+        "msdyn_projectgoal and msdyn_projecttasktogoal are listed as supported scheduling entities in MS docs (schedule-api-preview, updated Jan 2026)",
+        "Goal Create/Update/Delete supported via PSS. TaskToGoal Create/Delete supported. Restricted fields: DescriptionPlainText, TaskDisplayOrder",
+        "Entity schema is NOT yet discovered \u00e2\u20ac\u201d requires runtime query (same approach as S6c for checklists)",
+        "Navigation property names for @odata.bind are NOT yet known \u00e2\u20ac\u201d require RelationshipDefinitions discovery (lesson learned from checklists: nav prop names are case-sensitive and must be queried, never guessed)",
+        "This is a P4W-only feature (not available in Project Operations without P4W)"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Entity set registration in DATAVERSE_SOURCES and power.config.json",
+          "status": "not-started"
+        },
+        {
+          "description": "Schema discovery for msdyn_projectgoal fields",
+          "status": "not-started"
+        },
+        {
+          "description": "Schema discovery for msdyn_projecttasktogoal junction fields",
+          "status": "not-started"
+        },
+        {
+          "description": "RelationshipDefinitions query for navigation property names",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Goal entity schema is undiscovered \u00e2\u20ac\u201d field names, FK structures, and nav property names are unknown until runtime query",
+          "impact": "medium",
+          "mitigation": "Use proven S6c/S5c spike approach (RelationshipDefinitions query with fallback param strategies)"
+        },
+        {
+          "description": "Goals may have licensing or environment-specific availability constraints not documented",
+          "impact": "low",
+          "mitigation": "The entity is listed in the official scheduling API docs; test in DEV environment first"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "MS documentation confirmation",
+          "content": "From the official Microsoft documentation (schedule-api-preview, updated Jan 2026): \"Project Goal: Yes, Yes, Yes\" for Create/Update/Delete via PSS. \"Project Task to Goal: Yes, No, Yes\" for Create/Delete (no Update). Restricted fields on Project Goal: DescriptionPlainText, TaskDisplayOrder. Restricted fields on Project Task to Goal: TaskDisplayOrder. This feature is only available for Project for the Web. The entities are NOT yet registered in the app's DATAVERSE_SOURCES or power.config.json. No schema discovery has been attempted. The proven approach for schema and nav property discovery is the RelationshipDefinitions query with client-side filtering (used successfully for checklists via S6c and labels via S5c).",
+          "references": [
+            {
+              "label": "Project Schedule APIs \u00e2\u20ac\u201d Supported Operations",
+              "uri": "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-management/schedule-api-preview"
+            }
+          ]
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When strategic alignment tracking is prioritized, or when users request the ability to link tasks to project goals within the PMO app.",
+        "targetCycleHint": "Future feature sprint after schema discovery spike"
+      },
+      "preservedContext": {
+        "fullContextText": "From the official Microsoft documentation (schedule-api-preview, updated Jan 2026): \"Project Goal: Yes, Yes, Yes\" for Create/Update/Delete via PSS. \"Project Task to Goal: Yes, No, Yes\" for Create/Delete (no Update). Restricted fields on Project Goal: DescriptionPlainText, TaskDisplayOrder. Restricted fields on Project Task to Goal: TaskDisplayOrder. This feature is only available for Project for the Web. The entities are NOT yet registered in the app's DATAVERSE_SOURCES or power.config.json. No schema discovery has been attempted. The proven approach for schema and nav property discovery is the RelationshipDefinitions query with client-side filtering (used successfully for checklists via S6c and labels via S5c)."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Requires schema discovery before implementation.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "goals",
+        "medium-effort",
+        "needs-schema-discovery"
+      ]
+    },
+    {
+      "id": "dfr-004-m3n4o5p6",
+      "canonicalKey": "gantt-timeline-view",
+      "itemType": "feature-implementation",
+      "title": "Timeline / Gantt view for task scheduling visualization",
+      "lifecycleState": "implemented",
+      "defermentRationale": "Deferred from Planner Task Parity Sprint. Large effort requiring Gantt library selection and significant UI engineering. Data layer is fully available \u00e2\u20ac\u201d deferral is purely about rendering complexity and library validation.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "The PMO app has no timeline or Gantt view. Users must open Planner to see the Schedule view for visualizing task dates, durations, and dependencies on a timeline. All the underlying data (msdyn_scheduledstart, msdyn_scheduledend, msdyn_projecttaskdependency) already exists and is fetched in TaskWorkspace \u00e2\u20ac\u201d only the rendering component is missing.",
+      "proposedSolutionApproach": "Add a \"Timeline\" tab to TaskWorkspace alongside Board and List tabs. Use a Gantt rendering library (frappe-gantt for MIT license and small SVG-based bundle, or dhtmlx-gantt for richer features, or custom SVG renderer for full control). Map ProjectTask[] + ProjectTaskDependency[] to the library's row/link format. Click on a bar opens TaskDetailPanel. Optional interactive drag-to-resize would update dates via PSS PssUpdateV1.",
+      "architecturalConsiderations": [
+        "Must work within the Power Apps Code App host (Vite build, no native DOM shell)",
+        "Bundle size impact of Gantt library must be evaluated (frappe-gantt ~15KB gzipped, dhtmlx-gantt ~200KB+)",
+        "All required data is already in memory in TaskWorkspace (tasks with dates, dependencies with link types)",
+        "Interactive edits (drag to change dates) require PSS PssUpdateV1 calls with PSS_DELAY.TASK_UPDATE (20s) persistence lag \u00e2\u20ac\u201d complex optimistic update pattern needed",
+        "WBS hierarchy should be reflected in the Gantt (indented rows for child tasks under summary parents)",
+        "The existing view switcher (Board/List) provides the exact UI pattern for adding a third tab"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Task data with start/end dates fetched in TaskWorkspace",
+          "status": "complete"
+        },
+        {
+          "description": "Dependency data with link types fetched in TaskWorkspace",
+          "status": "complete"
+        },
+        {
+          "description": "View switcher UI pattern (Board/List tabs) exists",
+          "status": "complete"
+        },
+        {
+          "description": "Gantt library selection and Vite compatibility validation",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Gantt library compatibility with Vite build pipeline and Power Apps Code App host",
+          "impact": "medium",
+          "mitigation": "Test frappe-gantt (SVG-based, no DOM dependencies) in Vite dev mode before committing"
+        },
+        {
+          "description": "Interactive drag-to-resize with 20s PSS persistence lag creates poor UX for date changes",
+          "impact": "medium",
+          "mitigation": "Start with read-only timeline (no drag); add interactive edits in a later phase"
+        },
+        {
+          "description": "Large task counts (100+) may cause rendering performance issues with SVG-based Gantt",
+          "impact": "low",
+          "mitigation": "Virtualize or paginate for large projects; most CFR projects have <50 tasks"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Planner Parity Plan analysis",
+          "content": "The Planner Task Parity Sprint Plan classified this as \"Partially feasible\" \u00e2\u20ac\u201d data exists but rendering requires significant UI engineering. The plan recommended frappe-gantt (MIT license, SVG-based, small bundle) as the initial library choice. The existing TaskWorkspace already has a view switcher with Board and List tabs \u00e2\u20ac\u201d adding a Timeline tab follows the same pattern. All task data (ProjectTask[] with msdyn_scheduledstart, msdyn_scheduledend, msdyn_finish, msdyn_duration) and dependency data (ProjectTaskDependency[] with msdyn_linktype supporting FS/FF/SS/SF) are already fetched and available in the TaskWorkspace component. The plan explicitly states: \"Interactive drag (optional): move bar = PSS update to start/end dates\" \u00e2\u20ac\u201d suggesting interactive edits should be deferred to a later phase within this feature."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When timeline visualization is prioritized for PMO oversight, or when Planner's Schedule view is the last remaining reason users navigate to Planner.",
+        "targetCycleHint": "Dedicated visualization sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "The Planner Task Parity Sprint Plan classified this as \"Partially feasible\" \u00e2\u20ac\u201d data exists but rendering requires significant UI engineering. The plan recommended frappe-gantt (MIT license, SVG-based, small bundle) as the initial library choice. The existing TaskWorkspace already has a view switcher with Board and List tabs \u00e2\u20ac\u201d adding a Timeline tab follows the same pattern. All task data (ProjectTask[] with msdyn_scheduledstart, msdyn_scheduledend, msdyn_finish, msdyn_duration) and dependency data (ProjectTaskDependency[] with msdyn_linktype supporting FS/FF/SS/SF) are already fetched and available in the TaskWorkspace component. The plan explicitly states: \"Interactive drag (optional): move bar = PSS update to start/end dates\" \u00e2\u20ac\u201d suggesting interactive edits should be deferred to a later phase within this feature."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Data layer complete; needs library selection and rendering build.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        },
+        {
+          "timestampUtc": "2026-04-23T21:00:00Z",
+          "action": "implemented",
+          "note": "Implemented as custom div/SVG-based Gantt renderer (TaskTimelineView.tsx) with zero external dependencies. No library needed — pure React/CSS/SVG. Added as Timeline tab in TaskWorkspace view switcher.",
+          "reference": {
+            "label": "TaskTimelineView.tsx",
+            "path": "app/src/components/scheduling/TaskTimelineView.tsx"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "gantt",
+        "timeline",
+        "large-effort"
+      ],
+      "implementationNotes": "Implemented with zero external dependencies — custom div/SVG-based Gantt renderer in TaskTimelineView.tsx (~260 lines, ~8KB). Features: sticky left task name column, auto date range from task dates, month/week grid headers, color-coded bars (emerald=complete, rose=overdue, blue=in-progress, slate=not-started), 6px summary bars vs 16px leaf bars, progress fill overlay, amber diamond milestone markers, SVG dependency arrows supporting all 4 link types (FS/FF/SS/SF), dashed rose today marker. Added as Timeline tab in TaskWorkspace view switcher. No interactive drag-to-resize (read-only). Click on bar or task name opens TaskDetailPanel."
+    },
+    {
+      "id": "dfr-005-q7r8s9t0",
+      "canonicalKey": "task-charts-panel",
+      "itemType": "feature-implementation",
+      "title": "Charts panel for task-level summary signals",
+      "lifecycleState": "implemented",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "The PMO app has no task-level charts or summary signals in the task workspace. Portfolio-level analytics exist on the Analytics pages, but the Tasks tab has no visual summary of task status distribution, completion rates by bucket, or priority breakdown. Planner provides a Charts view with these signals.",
+      "proposedSolutionApproach": "Add a \"Charts\" tab to TaskWorkspace showing computed visualizations from the existing in-memory task data. Charts include: task completion donut (not started / in progress / complete), tasks by bucket bar chart, tasks by priority bar chart, overdue count callout, effort distribution. Use recharts (likely already in ecosystem) or lightweight SVG components.",
+      "architecturalConsiderations": [
+        "All chart data is computable from the existing ProjectTask[] array already fetched in TaskWorkspace",
+        "No additional API calls needed",
+        "Recharts or @visx/shape are common React charting libraries; need to validate bundle size impact",
+        "The view switcher pattern (Board/List/Timeline) extends naturally to include Charts",
+        "Progress normalization (0-1 \u00e2\u2020\u2019 0-100) must be applied consistently (same normPct helper used elsewhere)"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Task data with progress, priority, bucket, and status fields available",
+          "status": "complete"
+        },
+        {
+          "description": "View switcher UI pattern exists",
+          "status": "complete"
+        },
+        {
+          "description": "Chart library selection",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Chart library bundle size impact",
+          "impact": "low",
+          "mitigation": "Use lightweight SVG components if recharts is too large; task counts are small enough for simple SVG"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Data availability",
+          "content": "The Planner Task Parity Sprint Plan classified this as \"Partially feasible\" with medium effort. All required data is already in memory \u00e2\u20ac\u201d task completion is derivable from msdyn_progress (normalized 0-100) and statecode, priority from msdyn_priority (1=Urgent, 3=Important, 5=Medium, 9=Low), bucket grouping from _msdyn_projectbucket_value. The plan suggested \"recharts is already likely in the ecosystem given the analytics pages\" \u00e2\u20ac\u201d this needs verification. The Analytics \u00e2\u2020\u2019 Schedule Quality page (SchedulePage.tsx) exists at the portfolio level but uses a data table, not chart components."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When task workspace visualization improvements are prioritized, or when PMO stakeholders request at-a-glance task distribution signals.",
+        "targetCycleHint": "Next visualization or analytics sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "The Planner Task Parity Sprint Plan classified this as \"Partially feasible\" with medium effort. All required data is already in memory \u00e2\u20ac\u201d task completion is derivable from msdyn_progress (normalized 0-100) and statecode, priority from msdyn_priority (1=Urgent, 3=Important, 5=Medium, 9=Low), bucket grouping from _msdyn_projectbucket_value. The plan suggested \"recharts is already likely in the ecosystem given the analytics pages\" \u00e2\u20ac\u201d this needs verification. The Analytics \u00e2\u2020\u2019 Schedule Quality page (SchedulePage.tsx) exists at the portfolio level but uses a data table, not chart components."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Pure UI build \u00e2\u20ac\u201d all data available.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "charts",
+        "medium-effort",
+        "ui-only"
+      ],
+      "implementationNotes": "Implemented in Planner Parity Sprint session \u00e2\u20ac\u201d TaskChartsView.tsx created with recharts PieChart (completion donut) and horizontal BarCharts (by-priority, by-bucket); wired as Charts tab in TaskWorkspace."
+    },
+    {
+      "id": "dfr-006-u1v2w3x4",
+      "canonicalKey": "workload-people-view",
+      "itemType": "feature-implementation",
+      "title": "Workload / People view for resource capacity visualization",
+      "lifecycleState": "implemented",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "The PMO app has no workload or people-centric view. Users cannot see how tasks are distributed across team members, what each person's total assigned effort is, or whether anyone is over/under-allocated. Planner provides a People view with this information.",
+      "proposedSolutionApproach": "Add a \"People\" tab to TaskWorkspace that groups resource assignments by team member. For each member, show: assigned tasks list, total effort hours (sum of msdyn_effort from assigned tasks), effort completed, completion rate. Optionally show a visual capacity bar if workload data is available from msdyn_resourceassignment.msdyn_plannedwork.",
+      "architecturalConsiderations": [
+        "Data exists: msdyn_resourceassignment links tasks to team members, msdyn_effort and msdyn_effortcompleted are on each task",
+        "The assignmentMap in TaskWorkspace already groups assignments by task \u00e2\u20ac\u201d needs to be inverted to group by team member",
+        "msdyn_resourceassignment.msdyn_plannedwork contains JSON time-phased data for detailed workload analysis (Memo field)",
+        "Significant UI build required for the per-person view layout"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Resource assignment data fetched via useResourceAssignments",
+          "status": "complete"
+        },
+        {
+          "description": "Team member data fetched via useProjectTeamMembers",
+          "status": "complete"
+        },
+        {
+          "description": "Task effort fields in BASE_SELECT",
+          "status": "complete"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "msdyn_plannedwork (JSON time-phased data) parsing complexity for detailed capacity analysis",
+          "impact": "medium",
+          "mitigation": "Start with simple effort sum aggregation; defer time-phased capacity to a later enhancement"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Data and mapping",
+          "content": "The Planner Task Parity Sprint Plan classified this as \"Partially feasible\" with medium effort. Data exists via msdyn_resourceassignment (linked to msdyn_projecttask and msdyn_projectteam). The existing assignmentMap in TaskWorkspace maps taskId \u00e2\u2020\u2019 [{assignmentId, teamMemberId, name}]. This needs to be inverted to create a memberMap: teamMemberId \u00e2\u2020\u2019 [{taskId, effort, effortCompleted}]. The msdyn_resourceassignment entity also has msdyn_plannedwork (Memo field containing JSON time-phased contour data) which could power a more detailed capacity/workload visualization, but parsing this field adds complexity and should be deferred."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When resource capacity management is prioritized for PMO oversight, or when managers request visibility into team member workload distribution.",
+        "targetCycleHint": "Resource management sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "The Planner Task Parity Sprint Plan classified this as \"Partially feasible\" with medium effort. Data exists via msdyn_resourceassignment (linked to msdyn_projecttask and msdyn_projectteam). The existing assignmentMap in TaskWorkspace maps taskId \u00e2\u2020\u2019 [{assignmentId, teamMemberId, name}]. This needs to be inverted to create a memberMap: teamMemberId \u00e2\u2020\u2019 [{taskId, effort, effortCompleted}]. The msdyn_resourceassignment entity also has msdyn_plannedwork (Memo field containing JSON time-phased contour data) which could power a more detailed capacity/workload visualization, but parsing this field adds complexity and should be deferred."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Data layer complete; needs UI build and assignmentMap inversion.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "workload",
+        "people",
+        "medium-effort"
+      ],
+      "implementationNotes": "Implemented in Planner Parity Sprint session \u00e2\u20ac\u201d TaskPeopleView.tsx created with Planner-style column-per-person flex layout, summary stats cards (Incomplete/Late counts), rose top bar for late tasks, and bucket-grouped collapsible task lists."
+    },
+    {
+      "id": "dfr-007-y5z6a7b8",
+      "canonicalKey": "drag-drop-between-buckets",
+      "itemType": "enhancement-request",
+      "title": "Drag-and-drop task cards between Kanban buckets",
+      "lifecycleState": "implemented",
+      "defermentRationale": "Deferred from Planner Task Parity Sprint. PSS write path is confirmed but optimistic UI with 20s persistence lag and WBS parent-child drag semantics need careful design. Needs DnD library integration.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "Tasks cannot be moved between buckets by dragging cards on the Kanban board. Users must use the task detail panel or Planner to change a task's bucket assignment. This is a core Kanban interaction that Planner supports natively.",
+      "proposedSolutionApproach": "Integrate a DnD library (dnd-kit recommended \u00e2\u20ac\u201d React-first, accessible, small bundle) to enable dragging TaskRow cards between BucketSection columns. Each drop triggers a PSS PssUpdateV1 updating msdyn_projectbucket@odata.bind on the task. The optimistic update pattern holds the new bucket assignment in the TanStack Query cache until the re-fetch settles after PSS_DELAY.TASK_UPDATE.",
+      "architecturalConsiderations": [
+        "PSS write path for bucket reassignment is confirmed working (msdyn_projectbucket@odata.bind in PssUpdateV1)",
+        "The 20s PSS persistence lag (PSS_DELAY.TASK_UPDATE) means the optimistic update must hold the new bucket assignment in memory for an extended period",
+        "dnd-kit is React-first, accessible, and has a small bundle (~10KB gzipped)",
+        "WBS hierarchy complicates drag behavior \u00e2\u20ac\u201d should a parent task drag bring its children? Should children be draggable independently?",
+        "Multiple rapid drags before persistence could cause state inconsistencies"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "PSS PssUpdateV1 bucket reassignment works",
+          "status": "complete"
+        },
+        {
+          "description": "Optimistic update pattern for task mutations exists",
+          "status": "complete"
+        },
+        {
+          "description": "DnD library selection and integration",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Optimistic UI with 20s PSS persistence lag creates a window where the visual state diverges from Dataverse",
+          "impact": "medium",
+          "mitigation": "Show a subtle \"syncing\" indicator on recently-dropped cards; prevent re-dragging until persistence confirms"
+        },
+        {
+          "description": "WBS parent-child drag semantics are complex",
+          "impact": "medium",
+          "mitigation": "Initially only allow leaf task drag; summary tasks are not draggable"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "DnD library recommendation",
+          "content": "The Planner Task Parity Sprint Plan classified this as \"Feasible with additional work and validation\" with medium effort. PSS write path for bucket reassignment is confirmed (msdyn_projectbucket@odata.bind). The plan recommended dnd-kit (React-first, accessible, small bundle). The main concern is optimistic UI behavior with the 20s persistence lag \u00e2\u20ac\u201d the plan says \"the optimistic update must hold the new bucket assignment in memory until the query invalidation settles.\" The existing optimistic update pattern in useUpdateProjectTask provides the template for this, but drag-and-drop introduces rapid successive mutations that need to be serialized."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When Kanban board UX improvements are prioritized, or when users report friction from having to use the detail panel to change bucket assignments.",
+        "targetCycleHint": "Next UX polish sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "The Planner Task Parity Sprint Plan classified this as \"Feasible with additional work and validation\" with medium effort. PSS write path for bucket reassignment is confirmed (msdyn_projectbucket@odata.bind). The plan recommended dnd-kit (React-first, accessible, small bundle). The main concern is optimistic UI behavior with the 20s persistence lag \u00e2\u20ac\u201d the plan says \"the optimistic update must hold the new bucket assignment in memory until the query invalidation settles.\" The existing optimistic update pattern in useUpdateProjectTask provides the template for this, but drag-and-drop introduces rapid successive mutations that need to be serialized."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Write path confirmed; needs DnD library integration.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        },
+        {
+          "timestampUtc": "2026-04-23T21:00:00Z",
+          "action": "implemented",
+          "note": "Implemented using HTML5 native Drag and Drop API — no external DnD library needed. Extended ScheduleTaskUpdate with bucketId field, added drag handlers to TaskRow, drop zone to BucketSection, and wired through TaskWorkspace.",
+          "reference": {
+            "label": "BucketSection.tsx + TaskRow.tsx + schedulingClient.ts",
+            "path": "app/src/components/scheduling/BucketSection.tsx"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "drag-drop",
+        "kanban",
+        "medium-effort"
+      ],
+      "implementationNotes": "Implemented using HTML5 native Drag and Drop API — zero external dependencies (no dnd-kit or react-beautiful-dnd). TaskRow gets draggable attribute and onDragStart handler setting application/x-task-id. BucketSection acts as drop zone with dragOverCount state for nested enter/leave tracking and visual border-primary highlight. Drop triggers PSS PssUpdateV1 with msdyn_projectbucket@odata.bind via extended ScheduleTaskUpdate. Optimistic cache update moves task to new bucket immediately. Constraints: leaf tasks only (not summary/parent), board view with bucket grouping only, no drag while _saving."
+    },
+    {
+      "id": "dfr-008-c9d0e1f2",
+      "canonicalKey": "additional-dependency-types",
+      "itemType": "enhancement-request",
+      "title": "Additional dependency link types (FF/SS/SF) beyond Finish-to-Start",
+      "lifecycleState": "implemented",
+      "defermentRationale": "Deferred from Planner Task Parity Sprint. Small effort \u00e2\u20ac\u201d all infrastructure is complete. Deprioritized in favor of higher-impact parity features.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "The PMO app only supports Finish-to-Start (FS) dependencies. The msdyn_projecttaskdependency entity supports four link types via msdyn_linktype (0=FS, 1=FF, 2=SS, 3=SF), and Planner allows creating all four types. The current dependency manager dialog hardcodes msdyn_linktype: 0 (FS) for all new dependencies and does not display the link type for existing ones.",
+      "proposedSolutionApproach": "Add a link type selector (dropdown with FS/FF/SS/SF options) to the dependency creation flow in the Dependency Manager dialog and the TaskDetailPanel predecessors section. Display the link type abbreviation next to each predecessor in the UI. Update createProjectTaskDependency in schedulingClient.ts to accept a linkType parameter instead of hardcoding 0.",
+      "architecturalConsiderations": [
+        "msdyn_linktype field already exists in ProjectTaskDependency model (0=FS, 1=FF, 2=SS, 3=SF)",
+        "The dependency read API already fetches msdyn_linktype",
+        "Only the UI and the create function need changes \u00e2\u20ac\u201d no new API calls or entity registration",
+        "The PSS PssCreateV1 for dependencies already works; just need to pass a different msdyn_linktype value"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "msdyn_projecttaskdependency model includes msdyn_linktype",
+          "status": "complete"
+        },
+        {
+          "description": "Dependency CRUD via PSS works (FS type)",
+          "status": "complete"
+        },
+        {
+          "description": "Dependency Manager dialog exists in TaskWorkspace",
+          "status": "complete"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Non-FS dependency types may have scheduling engine implications that affect task date calculations",
+          "impact": "low",
+          "mitigation": "The scheduling engine handles all four types natively; no app-side date logic needed"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Implementation simplicity",
+          "content": "The Planner Task Parity Sprint Plan noted: \"Other link types (FS/FF/SS/SF) are supported by the entity but only FS is exposed in UI.\" The createProjectTaskDependency function in schedulingClient.ts currently hardcodes msdyn_linktype: 0 (Finish-to-Start). The ProjectTaskDependency model already has msdyn_linktype as an optional number field. The dependency manager dialog in TaskWorkspace already shows predecessors with add/remove \u00e2\u20ac\u201d adding a link type dropdown alongside the task selector is straightforward. The change is small: update the create function signature, add the dropdown, and display the type abbreviation in the predecessor list."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When dependency management improvements are prioritized, or as a quick win in any sprint with spare capacity.",
+        "targetCycleHint": "Any sprint \u00e2\u20ac\u201d small effort, quick win"
+      },
+      "preservedContext": {
+        "fullContextText": "The Planner Task Parity Sprint Plan noted: \"Other link types (FS/FF/SS/SF) are supported by the entity but only FS is exposed in UI.\" The createProjectTaskDependency function in schedulingClient.ts currently hardcodes msdyn_linktype: 0 (Finish-to-Start). The ProjectTaskDependency model already has msdyn_linktype as an optional number field. The dependency manager dialog in TaskWorkspace already shows predecessors with add/remove \u00e2\u20ac\u201d adding a link type dropdown alongside the task selector is straightforward. The change is small: update the create function signature, add the dropdown, and display the type abbreviation in the predecessor list."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Small UI change \u00e2\u20ac\u201d all data infrastructure complete.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "dependencies",
+        "small-effort",
+        "ui-only"
+      ]
+    },
+    {
+      "id": "dfr-009-g3h4i5j6",
+      "canonicalKey": "pmo-native-task-comments",
+      "itemType": "feature-implementation",
+      "title": "PMO-native task comments (custom Dataverse table, not Planner-synced)",
+      "lifecycleState": "deferred",
+      "defermentRationale": "Deferred from Planner Task Parity Sprint. Requires custom Dataverse table creation and solution deployment \u00e2\u20ac\u201d cannot be done from app code alone. Planner sync is architecturally impossible (Exchange Group mailbox backend). Custom table approach needs solution architect coordination.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "The PMO app has no task-level commenting capability. Planner task comments route to the M365 Group mailbox (Exchange) \u00e2\u20ac\u201d there is no Dataverse entity, no PSS action, and no feasible Graph API integration from the Power Apps Code App host for the Planner comment system. This is classified as \"Not currently possible through supported technical means\" for true Planner sync. However, a PMO-native comment system using a custom Dataverse table is feasible and would provide standalone commenting capability within the app.",
+      "proposedSolutionApproach": "Create a custom pmo_taskcomment Dataverse table with fields: text (Memo), FK to msdyn_projecttask, created by (systemuser), created on (DateTime). Use direct OData CRUD (not PSS, since this is a custom table not managed by the scheduling engine). Add a comments section to TaskDetailPanel with a chronological message list and an input field. This is explicitly NOT Planner-synced \u00e2\u20ac\u201d it is a PMO-native enhancement.",
+      "architecturalConsiderations": [
+        "This is NOT true Planner parity \u00e2\u20ac\u201d it is a PMO-native standalone feature. Comments created here will NOT appear in Planner and vice versa.",
+        "Custom Dataverse table (pmo_taskcomment) requires solution deployment to DEV/PROD environments",
+        "Direct OData CRUD (not PSS) \u00e2\u20ac\u201d the table is not managed by the scheduling engine",
+        "Requires schema design: pmo_taskcomment entity with text, task FK, created by, timestamps",
+        "Comment ordering by createdon descending",
+        "No threading or rich text in initial implementation"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Custom pmo_taskcomment entity created in CFRProjectManagement solution",
+          "status": "not-started",
+          "owner": "Solution architect"
+        },
+        {
+          "description": "Entity deployed to DEV environment",
+          "status": "not-started"
+        },
+        {
+          "description": "Entity registered in DATAVERSE_SOURCES and power.config.json",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Custom Dataverse table requires solution XML modification and import \u00e2\u20ac\u201d cannot be done from the app code alone",
+          "impact": "high",
+          "mitigation": "Coordinate with solution deployment process; add entity to CFRProjectManagement solution package"
+        },
+        {
+          "description": "Comments are NOT synced with Planner \u00e2\u20ac\u201d users may expect cross-platform comment visibility",
+          "impact": "medium",
+          "mitigation": "Label clearly as \"PMO Notes\" (not \"Comments\") to set correct expectations; add Planner deep link for threaded discussion"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Planner sync blocker analysis",
+          "content": "The Planner Task Parity Sprint Plan explicitly classified task comments as \"Not currently possible through supported technical means\" for true Planner sync. The blocker is architectural: Planner task comments use the M365 Group mailbox (Exchange) \u00e2\u20ac\u201d no Dataverse entity, no PSS path. Any Graph-based alternative (POST /groups/{groupId}/conversations) would require separate authentication and host-capability validation outside the current sprint scope. The plan identified a \"PMO-native workaround (not true parity)\" using a custom pmo_taskcomment Dataverse table with direct OData CRUD. The plan explicitly states this must be \"labeled honestly as PMO-native enhancements, not Planner parity, because they would not sync with Planner.\""
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When the CFRProjectManagement solution is being updated for other schema changes, or when task-level collaboration is explicitly prioritized.",
+        "targetCycleHint": "Coordinate with next solution deployment cycle"
+      },
+      "preservedContext": {
+        "fullContextText": "The Planner Task Parity Sprint Plan explicitly classified task comments as \"Not currently possible through supported technical means\" for true Planner sync. The blocker is architectural: Planner task comments use the M365 Group mailbox (Exchange) \u00e2\u20ac\u201d no Dataverse entity, no PSS path. Any Graph-based alternative (POST /groups/{groupId}/conversations) would require separate authentication and host-capability validation outside the current sprint scope. The plan identified a \"PMO-native workaround (not true parity)\" using a custom pmo_taskcomment Dataverse table with direct OData CRUD. The plan explicitly states this must be \"labeled honestly as PMO-native enhancements, not Planner parity, because they would not sync with Planner.\""
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Deferred from Planner Task Parity Sprint. Requires custom Dataverse table deployment before app code.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": true,
+        "supervisoryReview": {
+          "status": "pending",
+          "notes": "Requires solution architect coordination for custom Dataverse table creation in CFRProjectManagement solution."
+        }
+      },
+      "tags": [
+        "comments",
+        "medium-effort",
+        "custom-dataverse-table",
+        "not-planner-synced"
+      ]
+    },
+    {
+      "id": "dfr-010-k7l8m9n0",
+      "canonicalKey": "fix-progress-invalidate-delay",
+      "itemType": "bug-remediation",
+      "title": "Fix progress onTasksInvalidate using hardcoded 24s instead of PSS_DELAY.TASK_UPDATE",
+      "lifecycleState": "implemented",
+      "defermentRationale": "Originally deferred as a low-priority bug fix from the Planner Task Parity Sprint. Implemented in the same session after the tiered delay system was built.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        },
+        {
+          "label": "MS API Performance Benchmarks",
+          "uri": "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-management/project-schedule-api-performance"
+        }
+      ],
+      "originalProblemStatement": "The handleProgressSet and handleProgressToggle functions in TaskDetailPanel use a hardcoded setTimeout(onTasksInvalidate, 24_000) instead of the tiered PSS_DELAY.TASK_UPDATE constant (20s). This is inconsistent with the benchmark-based tiered delay system and results in a 4-second unnecessary wait for progress re-fetch.",
+      "proposedSolutionApproach": "Replace setTimeout(onTasksInvalidate, 24_000) with setTimeout(onTasksInvalidate, PSS_DELAY.TASK_UPDATE) in both handleProgressSet and handleProgressToggle in TaskDetailPanel.tsx. Import PSS_DELAY from useProjectTaskMutations.",
+      "architecturalConsiderations": [
+        "PSS_DELAY is already imported in many hooks; adding the import to TaskDetailPanel is trivial",
+        "The updateTaskProgress function in schedulingClient.ts does not use the delay constants (it's a fire-and-forget PSS call) \u00e2\u20ac\u201d the delay is managed by the caller in the component"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "PSS_DELAY tiered constants defined and exported",
+          "status": "complete"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "None \u00e2\u20ac\u201d this is a one-line constant replacement",
+          "impact": "low"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Benchmark reference",
+          "content": "The tiered delay system was implemented based on official Microsoft API performance benchmarks (https://learn.microsoft.com/en-us/dynamics365/project-operations/project-management/project-schedule-api-performance). PSS_DELAY.TASK_UPDATE = 20_000ms (P90 18.72s + buffer). The hardcoded 24_000ms in TaskDetailPanel predates the tiered system and was never updated. Both handleProgressSet and handleProgressToggle call setTimeout(onTasksInvalidate, 24_000) after a successful updateTaskProgress call.",
+          "references": [
+            {
+              "label": "MS API Performance Benchmarks",
+              "uri": "https://learn.microsoft.com/en-us/dynamics365/project-operations/project-management/project-schedule-api-performance"
+            }
+          ]
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "Not applicable \u00e2\u20ac\u201d item is implemented."
+      },
+      "preservedContext": {
+        "fullContextText": "The tiered delay system was implemented based on official Microsoft API performance benchmarks (https://learn.microsoft.com/en-us/dynamics365/project-operations/project-management/project-schedule-api-performance). PSS_DELAY.TASK_UPDATE = 20_000ms (P90 18.72s + buffer). The hardcoded 24_000ms in TaskDetailPanel predates the tiered system and was never updated. Both handleProgressSet and handleProgressToggle call setTimeout(onTasksInvalidate, 24_000) after a successful updateTaskProgress call."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Bug deferred from Planner Task Parity Sprint. One-line fix.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:00:00Z",
+          "action": "implemented",
+          "note": "Replaced setTimeout(onTasksInvalidate, 24_000) with setTimeout(onTasksInvalidate, PSS_DELAY.TASK_UPDATE) in both handleProgressSet and handleProgressToggle. Imported PSS_DELAY from useProjectTaskMutations."
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "implementationReferences": [
+        {
+          "label": "TaskDetailPanel.tsx \u00e2\u20ac\u201d PSS_DELAY import + setTimeout fix",
+          "path": "app/src/components/scheduling/TaskDetailPanel.tsx"
+        }
+      ],
+      "tags": [
+        "bug-fix",
+        "small-effort",
+        "tiered-delays"
+      ]
+    },
+    {
+      "id": "dfr-011-o1p2q3r4",
+      "canonicalKey": "fix-panel-error-banner",
+      "itemType": "bug-remediation",
+      "title": "Verify and fix error banner display inside TaskDetailPanel",
+      "lifecycleState": "implemented",
+      "defermentRationale": "Originally deferred as a low-priority bug fix from the Planner Task Parity Sprint. Implemented in the same session by pinning the error banner with sticky positioning.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "The user reported that error messages from panel actions (label assign/remove, checklist operations) did not appear inside the TaskDetailPanel despite the showError function and panelError state being implemented. Errors only showed on the workspace banner (behind the panel), requiring the user to close the panel to read them. The showError mechanism was added with setPanelError state and a red AlertCircle banner at the top of the panel content, but the user did not confirm it worked before moving on to other fixes.",
+      "proposedSolutionApproach": "Verify that the panelError banner renders correctly by testing a controlled error scenario. If the banner doesn't show, debug the React rendering path \u00e2\u20ac\u201d check if panelError state is being set, if the JSX conditional renders, and if there's a CSS/z-index visibility issue. The code inspection shows showError is called from all catch handlers and panelError JSX exists at the top of the panel content div.",
+      "architecturalConsiderations": [
+        "showError calls both setPanelError(msg) and onError(msg) \u00e2\u20ac\u201d dual display in panel AND workspace",
+        "panelError state auto-clears after 15 seconds via setTimeout",
+        "The error banner JSX is inside the ViewDetailPanel's scrollable content area \u00e2\u20ac\u201d could be scrolled out of view if the user scrolled down before the error appeared"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "showError function implemented in TaskDetailPanel",
+          "status": "complete"
+        },
+        {
+          "description": "panelError state and JSX banner implemented",
+          "status": "complete"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "The banner may be present but not visible due to scroll position or z-index",
+          "impact": "low",
+          "mitigation": "Consider pinning the error banner to the top of the panel (outside the scroll area) using sticky positioning"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Implementation audit",
+          "content": "The panelError state was added to TaskDetailPanel with useState<string | null>(null). The showError callback was created with useCallback that calls setPanelError(msg), onError(msg), and setTimeout(() => setPanelError(null), 15000). All catch handlers in the panel were updated from onError() to showError() via sed replacement. The JSX banner renders at the top of the panel content div: {panelError && (<div className=\"flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive\">...)}. The user reported it didn't show during label remove testing, but this was before the latest pushes that fixed other issues. Verification is still pending."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "Not applicable \u00e2\u20ac\u201d item is implemented."
+      },
+      "preservedContext": {
+        "fullContextText": "The panelError state was added to TaskDetailPanel with useState<string | null>(null). The showError callback was created with useCallback that calls setPanelError(msg), onError(msg), and setTimeout(() => setPanelError(null), 15000). All catch handlers in the panel were updated from onError() to showError() via sed replacement. The JSX banner renders at the top of the panel content div: {panelError && (<div className=\"flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive\">...)}. The user reported it didn't show during label remove testing, but this was before the latest pushes that fixed other issues. Verification is still pending."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Bug deferred from Planner Task Parity Sprint. Needs verification \u00e2\u20ac\u201d code appears correct but user did not confirm.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:00:00Z",
+          "action": "implemented",
+          "note": "Pinned error banner to top of panel scroll area using sticky top-0 z-10 positioning with negative margins to span full width. Changed break-all to break-words for better readability."
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "implementationReferences": [
+        {
+          "label": "TaskDetailPanel.tsx \u00e2\u20ac\u201d sticky error banner",
+          "path": "app/src/components/scheduling/TaskDetailPanel.tsx"
+        }
+      ],
+      "tags": [
+        "bug-fix",
+        "small-effort",
+        "error-handling"
+      ]
+    },
+    {
+      "id": "dfr-012-s5t6u7v8",
+      "canonicalKey": "spa-navigation-state-loss",
+      "itemType": "architecture-dependency",
+      "title": "SPA navigation state loss on browser refresh",
+      "lifecycleState": "implemented",
+      "defermentRationale": "Deferred from Planner Task Parity Sprint. Cross-cutting architecture change that affects every page and navigation action. Requires investigation of Power Apps Code App host constraints on URL manipulation before an implementation approach can be selected.",
+      "originatingPlanReference": {
+        "label": "Planner Task Parity Sprint Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Planner Task Parity Sprint Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+        }
+      ],
+      "originalProblemStatement": "When the user refreshes the browser, the app always returns to the home screen instead of the page they were on. The browser URL does not change as the user navigates within the app (no URL-based routing), so there is no way to bookmark or deep-link to a specific project, tab, or task. The user flagged this as a holistic issue to address separately from the task parity sprint.",
+      "proposedSolutionApproach": "Implement URL-based routing using React Router (or the app's existing routing mechanism if one exists). Map navigation state to URL paths/query parameters so that browser refresh, back/forward, and bookmarking work correctly. Key routes: /projects, /projects/:id, /projects/:id/tasks, /programs, /programs/:id, /analytics/*, /dashboard.",
+      "architecturalConsiderations": [
+        "The Power Apps Code App host may impose constraints on URL manipulation (pushState, hash routing)",
+        "The existing app navigation likely uses React state to switch between pages \u00e2\u20ac\u201d need to audit the current routing mechanism",
+        "URL-based routing would require updating all navigation triggers (sidebar links, breadcrumbs, card clicks) to use router navigation instead of state changes",
+        "Deep linking to specific tasks (opening the TaskDetailPanel for a specific task via URL) would be a significant UX improvement",
+        "This is a cross-cutting change that affects the entire app navigation architecture"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Audit current navigation/routing mechanism",
+          "status": "not-started"
+        },
+        {
+          "description": "Determine Power Apps Code App host constraints on URL manipulation",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Power Apps Code App host may not support pushState or hash-based routing",
+          "impact": "high",
+          "mitigation": "Test URL manipulation capabilities in the host environment before committing to implementation approach"
+        },
+        {
+          "description": "Cross-cutting change affects every page and navigation action in the app",
+          "impact": "high",
+          "mitigation": "Implement incrementally \u00e2\u20ac\u201d add routing wrapper first, then migrate pages one at a time"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "User report and scope",
+          "content": "The user reported this during the task parity sprint testing: \"since the browser url does not change as you navigate the app it always brings you back to the home screen and you have to find your way back to the screen you were on.\" This was flagged as a holistic issue to address outside the parity sprint scope. The current app uses React state-based navigation (no React Router or URL-based routing). The Power Apps Code App host environment may impose constraints on URL manipulation that need to be investigated before selecting an implementation approach."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When app navigation is prioritized as a holistic improvement, or after validating that the Power Apps Code App host supports URL manipulation (pushState or hash routing).",
+        "targetCycleHint": "Dedicated navigation/routing sprint after host capability validation"
+      },
+      "preservedContext": {
+        "fullContextText": "The user reported this during the task parity sprint testing: \"since the browser url does not change as you navigate the app it always brings you back to the home screen and you have to find your way back to the screen you were on.\" This was flagged as a holistic issue to address outside the parity sprint scope. The current app uses React state-based navigation (no React Router or URL-based routing). The Power Apps Code App host environment may impose constraints on URL manipulation that need to be investigated before selecting an implementation approach."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T17:30:00Z",
+          "action": "intake",
+          "note": "Bug deferred from Planner Task Parity Sprint. Cross-cutting architecture change \u00e2\u20ac\u201d needs host capability investigation first.",
+          "reference": {
+            "label": "Planner Task Parity Sprint Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\create-a-product-first-technical-joyful-babbage.md"
+          }
+        },
+        {
+          "timestampUtc": "2026-04-19T18:30:00Z",
+          "action": "context-append",
+          "note": "Schema migration from v1.0.0 to v2.0.0: added itemType, defermentRationale, originatingReferences, reintroductionGuidance, defermentDecision."
+        },
+        {
+          "timestampUtc": "2026-04-23T19:00:00Z",
+          "action": "implemented",
+          "note": "Two-layer deep linking implemented: (1) useUrlState hook syncs ProjectDetailPage tab, monitor sub-tab, task selection, and task view mode to HashRouter search params for in-session back/forward; (2) deepLink.ts reads getContext().app.queryParams on startup for cross-session deep link navigation and provides buildDeepLink() for Copy Link buttons on Project, Program, and Intake detail pages. Host constraint resolved: HashRouter works in Power Apps Code App iframe; pushState cannot be used. Environment values read at runtime from SDK getContext() \u2014 no hardcoded env-specific constants. Catch-all 404 route added."
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T17:30:00Z",
+        "deferredBy": "Planner Task Parity Sprint team",
+        "requiresSupervisoryReview": true,
+        "supervisoryReview": {
+          "status": "approved",
+          "reviewedOnUtc": "2026-04-23T19:00:00Z",
+          "notes": "Host capability validated: HashRouter (hash-based routing) confirmed working in Power Apps Code App host. pushState/BrowserRouter confirmed not usable. Implementation completed with useUrlState hook + deepLink.ts SDK integration."
+        }
+      },
+      "tags": [
+        "navigation",
+        "routing",
+        "large-effort",
+        "holistic",
+        "cross-cutting"
+      ]
+    },
+    {
+      "id": "dfr-013-mira-open-tasks",
+      "canonicalKey": "mira-open-tasks-capability",
+      "itemType": "feature-implementation",
+      "title": "Mira first-class open tasks capability",
+      "lifecycleState": "deferred",
+      "defermentRationale": "Deferred after Waves 0-3 completion because the shipped Mira scope prioritized health, status, triage, and governed feedback flows. User feedback indicates \"what are my open tasks?\" is a natural first-class question that is not adequately served by the existing preset actions.",
+      "originatingPlanReference": {
+        "label": "Mira Handoff And Future Development Plan",
+        "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Mira Handoff And Future Development Plan",
+          "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+        },
+        {
+          "label": "Mira output contracts",
+          "path": "app/src/ai/contracts.ts"
+        }
+      ],
+      "originalProblemStatement": "Mira currently supports project health, program health, status drafting, risk assessment, blockers, triage, and governed bug/enhancement flows, but it does not provide a first-class answer to the direct user question \"what are my open tasks?\". The current product boundary makes that a genuine missing capability rather than a synonym for any existing quick action.",
+      "proposedSolutionApproach": "Add a task-centric Mira capability with its own contract, context loader, app-side implementation, Copilot Studio topic, and supporting action(s). Start with project-page scope and answer with a structured summary of open tasks, likely grouped by status, owner, due state, and priority. Reuse existing task APIs and route-aware context patterns rather than forcing user text into existing non-task topics.",
+      "architecturalConsiderations": [
+        "Requires a new task-oriented output contract in app/src/ai/contracts.ts rather than reusing ProjectHealthAdvisory or TriageSummary",
+        "Should begin with project-context scope because project route context is already explicit in MiraPanel",
+        "Likely needs a new context loader that composes open tasks, assignments, due dates, and possibly buckets",
+        "Should be exposed as a first-class capability in both app-side guided actions and agent topic inventory",
+        "Must not be implemented as a classifier shim over existing actions"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Validate existing task read APIs and route context are sufficient for a project-scoped first release",
+          "status": "not-started"
+        },
+        {
+          "description": "Design a task-oriented output contract",
+          "status": "not-started"
+        },
+        {
+          "description": "Determine whether existing APIs already expose enough assignment/due-state detail",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "A weak narrative-only answer would not meet user expectations for a task question",
+          "impact": "medium",
+          "mitigation": "Use a structured result shape with explicit task references, counts, and prioritization"
+        },
+        {
+          "description": "Task volume may require pagination or top-N summarization in some projects",
+          "impact": "low",
+          "mitigation": "Start with a prioritized subset and a clear summarization rule"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Why this is first-class",
+          "content": "This capability was explicitly identified after Wave completion as a question users are naturally going to ask. The previously considered approach of mapping arbitrary text onto the existing preset actions was rejected because it would degrade UX and trust. Therefore open tasks must be planned as a real feature with its own contract and grounding logic, not as a synonym resolution layer."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "Next Mira feature cycle focused on high-frequency user questions.",
+        "targetCycleHint": "First bounded Mira enhancement sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "Users are expected to ask \"what are my open tasks?\" and this is not meaningfully answered by any existing Mira action. The idea of taking arbitrary user text and classifying it into the existing preset actions was explicitly rejected because it would frustrate users and degrade trust. Therefore this question needs to become a first-class task-oriented Mira capability."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T18:45:00Z",
+          "action": "intake",
+          "note": "Captured from post-delivery Mira planning discussion as a first-class missing capability.",
+          "reference": {
+            "label": "Mira Handoff And Future Development Plan",
+            "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T18:45:00Z",
+        "deferredBy": "Mira post-delivery planning",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "mira",
+        "tasks",
+        "first-class-capability",
+        "high-value"
+      ]
+    },
+    {
+      "id": "dfr-014-mira-needs-attention",
+      "canonicalKey": "mira-needs-attention-capability",
+      "itemType": "feature-implementation",
+      "title": "Mira direct needs-attention capability in user language",
+      "lifecycleState": "deferred",
+      "defermentRationale": "Deferred after Waves 0-3 because current triage functionality exists, but the product language and output shape do not yet align cleanly to the natural user question \"what needs my attention?\".",
+      "originatingPlanReference": {
+        "label": "Mira Handoff And Future Development Plan",
+        "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Mira Handoff And Future Development Plan",
+          "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+        },
+        {
+          "label": "Mira contract fidelity mapping",
+          "path": "copilot-studio/CONTRACTS.md"
+        }
+      ],
+      "originalProblemStatement": "Mira currently has `pmo-triage-needs-attention`, but the user-facing question \"what needs my attention?\" implies a more direct, human-friendly capability that may need different scoping, phrasing, ranking logic, or result presentation than the current triage summary exposes.",
+      "proposedSolutionApproach": "Design a dedicated first-class capability that may reuse parts of existing triage scoring but presents results in plain language and clearer scope terms. It should support explicit project, program, or portfolio framing and explain why each item needs attention now.",
+      "architecturalConsiderations": [
+        "May be implemented as an evolution of current triage logic, but should not be treated as only a display rename until contract and UX implications are reviewed",
+        "Needs a decision on scope precedence: current page scope first, broader portfolio only when explicitly asked or context-free",
+        "Should preserve deterministic explanation of why items are ranked",
+        "May share data loading patterns with current triage context but should be evaluated as its own user-facing capability"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Review whether current triage contract can be extended safely or if a new contract is needed",
+          "status": "not-started"
+        },
+        {
+          "description": "Design plain-language output structure",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Treating this as only a prompt alias could preserve current UX mismatch",
+          "impact": "medium",
+          "mitigation": "Design the capability explicitly in user language and re-check result shape against real user questions"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Why this is separate from current triage",
+          "content": "The delivered triage feature exists, but planning discussion after release highlighted that user language matters. A direct question like \"what needs my attention?\" should feel intentionally designed, not like an internal PMO triage label surfaced to end users."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When Mira UX refinement and high-frequency question coverage are prioritized.",
+        "targetCycleHint": "Same cycle as open tasks or immediately after"
+      },
+      "preservedContext": {
+        "fullContextText": "The product already includes PMO triage, but that does not automatically mean the user-facing question \"what needs my attention?\" is solved. This should be treated as a direct, first-class feature in user language rather than a hidden alias or classifier shortcut."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T18:45:00Z",
+          "action": "intake",
+          "note": "Captured from post-delivery Mira planning discussion as a likely first-class user question.",
+          "reference": {
+            "label": "Mira Handoff And Future Development Plan",
+            "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T18:45:00Z",
+        "deferredBy": "Mira post-delivery planning",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "mira",
+        "triage",
+        "attention",
+        "ux-language",
+        "high-value"
+      ]
+    },
+    {
+      "id": "dfr-015-mira-contextual-freeform-chat",
+      "canonicalKey": "mira-contextual-freeform-chat-host-bridge",
+      "itemType": "architecture-dependency",
+      "title": "True contextual freeform Mira chat in app via supported host-context bridge",
+      "lifecycleState": "deferred",
+      "defermentRationale": "Deferred because current freeform exists only through the iframe webchat path and does not inherit app route context. This is a legitimate future feature, but only if supported through a real host-to-chat context bridge rather than an arbitrary-text classifier over existing preset actions.",
+      "originatingPlanReference": {
+        "label": "Mira Handoff And Future Development Plan",
+        "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Mira Handoff And Future Development Plan",
+          "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+        },
+        {
+          "label": "MiraPanel current iframe integration",
+          "path": "app/src/components/mira/MiraPanel.tsx"
+        }
+      ],
+      "originalProblemStatement": "The current app gives users two separate modes: context-aware guided actions in the app fallback path, and freeform chat in the Copilot Studio iframe path. The iframe mode does not currently inherit project or program route context from the host app, so users cannot reliably ask arbitrary contextual questions like \"what are my open tasks?\" against the active entity.",
+      "proposedSolutionApproach": "Investigate and design a real host-context bridge for Mira chat using only supported Copilot Studio web integration methods. A valid solution must inject route context into the chat runtime, expose supported capabilities transparently, and handle unsupported arbitrary questions gracefully. Explicitly do not implement this as a classifier shim that maps arbitrary text into the existing button set.",
+      "architecturalConsiderations": [
+        "Must begin with evidence on supported Copilot Studio web integration capabilities in the current platform/toolchain",
+        "Needs a context bridge model for projectId/programId and possibly user/session metadata",
+        "Should preserve the current bounded quick-action path rather than replacing it prematurely",
+        "Must fail gracefully when a user asks something outside the supported capability set",
+        "This is substantially higher complexity than adding new first-class bounded capabilities"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Verify supported host-to-chat context injection mechanism for current Copilot Studio web integration",
+          "status": "not-started"
+        },
+        {
+          "description": "Define capability/tool selection model for contextual chat",
+          "status": "not-started"
+        },
+        {
+          "description": "Establish unsupported-scope behavior requirements",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Unsupported or weak context-injection support could make this feature impossible or misleading",
+          "impact": "high",
+          "mitigation": "Do evidence-first feasibility work before planning implementation"
+        },
+        {
+          "description": "A naive implementation could recreate the already-rejected classifier UX problem",
+          "impact": "high",
+          "mitigation": "Treat classifier-shim approaches as non-starters"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Settled rejection boundary",
+          "content": "Post-delivery Mira planning explicitly rejected the idea of letting users type arbitrary questions and silently classifying them into the existing preset actions. Therefore any future contextual freeform chat work must be based on a real supported context bridge and capability model, not a disguised intent router."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "Only after first-class high-frequency capabilities are addressed or when platform support for host-context-aware chat is verified.",
+        "targetCycleHint": "Later architecture spike, not the next bounded feature sprint"
+      },
+      "preservedContext": {
+        "fullContextText": "Freeform chat already exists in the iframe mode, but it is not app-context-aware. The right future solution is not a classifier that maps arbitrary text onto the current buttons. The right future solution, if feasible, is a supported host-context bridge that lets a true conversational surface receive route context and work against explicit capabilities."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-19T18:45:00Z",
+          "action": "intake",
+          "note": "Captured from post-delivery Mira planning discussion as a future architecture item with explicit anti-classifier guardrail.",
+          "reference": {
+            "label": "Mira Handoff And Future Development Plan",
+            "path": "C:\\Users\\z232630\\Documents\\GitHub\\cvs-health-source-code\\corp-fin-bi-pmo-cfr-solution\\docs\\planning\\mira-handoff-and-future-development-plan.md"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-19T18:45:00Z",
+        "deferredBy": "Mira post-delivery planning",
+        "requiresSupervisoryReview": true,
+        "supervisoryReview": {
+          "status": "pending",
+          "notes": "Requires evidence-first feasibility review of supported Copilot Studio web integration and host-context bridge options before implementation planning proceeds."
+        }
+      },
+      "tags": [
+        "mira",
+        "freeform-chat",
+        "context-bridge",
+        "architecture",
+        "high-complexity"
+      ]
+    },
+    {
+      "id": "dfr-016-feat-int-013",
+      "canonicalKey": "teams-channel-intake",
+      "itemType": "feature-implementation",
+      "title": "Teams channel intake via Copilot Studio",
+      "lifecycleState": "deferred",
+      "defermentRationale": "Deferred from Centralized Intake Phase 3 because registering a Teams app requires an M365 admin action (app registration in the Teams admin center) that is outside the development team's scope. The Copilot Studio bot and topic logic are ready; only the Teams channel binding and app registration are blocked.",
+      "originatingPlanReference": {
+        "label": "Centralized Intake Phase 3 Plan",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\warm-stargazing-quilt.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Centralized Intake Phase 3 Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\warm-stargazing-quilt.md"
+        },
+        {
+          "label": "Mira Copilot Studio bot",
+          "path": "solution/src/botcomponents/"
+        }
+      ],
+      "originalProblemStatement": "CFR PMO intake submissions currently require users to navigate to the Power Apps web interface. A Teams channel integration would allow users to submit intake requests directly via the Mira bot in Teams, lowering the friction of the submission process and meeting users where they already work.",
+      "proposedSolutionApproach": "Configure Copilot Studio Teams channel for the Mira bot. Author a Teams-appropriate intake topic YAML (or reuse the existing SubmitIntakeRequest topic) that is scoped for the Teams surface. Register the bot as a Teams app via the Teams admin center \u00e2\u20ac\u201d requires M365 admin to approve the app registration and deploy it to the organization or specific channels. The topic and connector action plumbing already exist from Phase 3; only the channel binding and admin approval step remain.",
+      "architecturalConsiderations": [
+        "Copilot Studio Teams channel configuration is distinct from the web embed channel \u00e2\u20ac\u201d separate publish target",
+        "Teams app registration requires M365 admin action in the Teams Admin Center; cannot be automated by development team",
+        "The existing SubmitIntakeRequest topic may need Teams-specific adaptive card formatting for optimal Teams UX",
+        "Teams channel messages have a 25 KB payload limit \u00e2\u20ac\u201d verify intake submission payloads fit",
+        "Bot authentication in Teams uses the bot's own Microsoft Entra app registration, not the solution SP"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "M365 admin registers the Mira bot as a Teams app in the Teams Admin Center",
+          "status": "not-started"
+        },
+        {
+          "description": "Copilot Studio Teams channel enabled and connected to the Mira bot",
+          "status": "not-started"
+        },
+        {
+          "description": "Validate SubmitIntakeRequest topic renders correctly on Teams surface",
+          "status": "not-started"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "M365 admin dependency means this cannot be unblocked by the development team alone",
+          "impact": "high",
+          "mitigation": "Raise a Teams app registration request to the M365 admin team with the bot application ID from Copilot Studio"
+        },
+        {
+          "description": "Adaptive card formatting differences between webchat and Teams may require topic-level adjustments",
+          "impact": "low",
+          "mitigation": "Test on Teams surface after channel is enabled; adjust card schema as needed"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Blocker origin",
+          "content": "FEAT-INT-013 was planned in the Centralized Intake Phase 3 deliverables but deferred at implementation time because the Teams channel registration step requires M365 admin action. The development team cannot complete this without admin involvement."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When an M365 admin is available to register the Mira bot in the Teams Admin Center and enable the Teams channel in Copilot Studio.",
+        "targetCycleHint": "Teams channel sprint after admin gate is cleared"
+      },
+      "preservedContext": {
+        "fullContextText": "The Mira bot, intake topic, and connector action for record creation are all deployed as of Centralized Intake Phase 3. The only remaining steps for Teams channel intake are: (1) M365 admin registers the app in Teams Admin Center, (2) Teams channel enabled in Copilot Studio, (3) topic validation on Teams surface. Development implementation effort is low; the blocker is purely administrative."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-21T00:00:00Z",
+          "action": "intake",
+          "note": "Deferred from Centralized Intake Phase 3. Bot and topic ready; blocked on M365 admin Teams app registration.",
+          "reference": {
+            "label": "Centralized Intake Phase 3 Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\warm-stargazing-quilt.md"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-21T00:00:00Z",
+        "deferredBy": "Centralized Intake Phase 3 implementation",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "teams",
+        "copilot-studio",
+        "intake",
+        "admin-dependency",
+        "low-dev-effort"
+      ]
+    },
+    {
+      "id": "dfr-017-cicd-val-pipe",
+      "canonicalKey": "ci-cd-validation-pipeline",
+      "itemType": "feature-implementation",
+      "title": "CI/CD PR-Gated Validation Pipeline",
+      "lifecycleState": "deferred",
+      "defermentRationale": "Deferred from Wave A of the Autopilot Execution Plan. The PMO CFR Solution repo is hosted in a CVS Health internal GitHub Enterprise instance where GitHub Actions workflow authoring requires organizational runner configuration and approval. The feature is valid but blocked on infrastructure prerequisites outside the coding agent boundary. Manual validation sequence (npm ci, tsc, build, test) remains the enforced gate.",
+      "originatingPlanReference": {
+        "label": "PMO CFR Autopilot Execution Plan",
+        "path": "docs/planning/PMOCFRSolution__AutopilotExecutionPlan.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "PMO CFR Autopilot Execution Plan",
+          "path": "docs/planning/PMOCFRSolution__AutopilotExecutionPlan.md"
+        },
+        {
+          "label": "Power Apps Code App Operating Standard",
+          "path": "docs/standards/power-platform/power-apps-code-app-operating-standard.md"
+        }
+      ],
+      "originalProblemStatement": "No automated PR-gated validation exists for the PMO CFR Solution repository. All validation (lint, type-check, build, test) is manual. This creates risk of broken merges and removes a safety net for autopilot agent-driven implementation.",
+      "proposedSolutionApproach": "Create a GitHub Actions workflow at .github/workflows/pr-validation.yml that runs on PRs targeting main. The workflow executes: npm ci, npx tsc -b --noEmit, npm run build, npm test. Fail-fast on any step failure. Workflow blocks merge on failure via branch protection rules.",
+      "architecturalConsiderations": [
+        "Requires GitHub Actions runners configured for the CVS Health GitHub Enterprise instance",
+        "Node.js LTS 20+ runner image required (matches local dev environment)",
+        "Workflow must run in the app/ subdirectory context (cd app before npm commands)",
+        "Branch protection rules on main must be updated to require the workflow status check",
+        "The mandatory validation sequence is defined in power-apps-code-app-operating-standard.md: lint, type-check, build, test"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "GitHub Actions runners available and configured for this repository",
+          "status": "unknown"
+        },
+        {
+          "description": "Branch protection rules on main support required status checks",
+          "status": "unknown"
+        },
+        {
+          "description": "npm test script configured with vitest (already present in package.json)",
+          "status": "complete"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "Without CI/CD gating, broken code can merge to main if manual validation is skipped",
+          "impact": "medium",
+          "mitigation": "Agent execution rules mandate the 3-step validation sequence (tsc, build, push) before every deployment. Manual discipline is the interim gate."
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Workflow specification",
+          "content": "The workflow should use a standard Node.js GitHub Actions setup: actions/checkout@v4, actions/setup-node@v4 with node-version 20, then sequential steps: npm ci (in app/), npx tsc -b --noEmit, npm run build, npm test. Cache npm dependencies via actions/cache. Trigger on pull_request targeting main branch."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When GitHub Actions runners are confirmed available and configured for the CVS Health GitHub Enterprise instance hosting this repository.",
+        "targetCycleHint": "Infrastructure enablement sprint or when org-level CI/CD platform is provisioned"
+      },
+      "preservedContext": {
+        "fullContextText": "FEAT-AUTO-002 from the PMO CFR Autopilot Execution Plan. Objective: Add PR-gated validation for autopilot implementation. Scope: GitHub Actions workflow at .github/workflows/pr-validation.yml running npm ci, npx tsc -b --noEmit, npm run build, npm test with fail-fast on broken builds or test failures. Acceptance criteria: PRs targeting main trigger validation workflow; workflow blocks merge on failure. The mandatory validation sequence is defined in the Power Apps Code App Operating Standard (corp-fin-bi-standards/docs/standards/power-platform/power-apps-code-app-operating-standard.md) and must be followed exactly: lint, type-check, build, test, auth check, config review, evidence capture. The app uses Vite 8, TypeScript 6, React 19, vitest 4 for testing. Package.json scripts are already configured with the required commands."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-21T22:22:54Z",
+          "action": "intake",
+          "note": "Deferred from Wave A autopilot execution. CI/CD pipeline authoring requires GitHub Enterprise infrastructure prerequisites outside the coding agent boundary.",
+          "reference": {
+            "label": "PMO CFR Autopilot Execution Plan",
+            "path": "docs/planning/PMOCFRSolution__AutopilotExecutionPlan.md"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-21T22:22:54Z",
+        "deferredBy": "Wave A autopilot execution",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "ci-cd",
+        "github-actions",
+        "infrastructure",
+        "wave-a"
+      ]
+    },
+    {
+      "id": "dfr-018-visual-admin-ux",
+      "canonicalKey": "visual-admin-intake-workflow-ux",
+      "itemType": "enhancement-request",
+      "title": "Visual Admin UX for Intake Workflow Configuration",
+      "lifecycleState": "implemented",
+      "defermentRationale": "Deferred from Wave G2 Admin Configuration UX. The current implementation is functional but exposes raw JSON and OData internals to administrators. Administrators are not developers and should never see field logical names, JSON, or OData syntax. The stage editor checkboxes for required fields and artifact types are already visual and correct — the problem is isolated to the conversion rules editor, approver group input, and lack of default workflow auto-creation.",
+      "originatingPlanReference": {
+        "label": "Governed Intake Workflow + Initiation Redesign — Wave G2 Admin Configuration UX",
+        "path": "C:\\Users\\z232630\\.claude\\plans\\warm-stargazing-quilt.md"
+      },
+      "originatingReferences": [
+        {
+          "label": "Governed Intake Workflow + Initiation Redesign Plan",
+          "path": "C:\\Users\\z232630\\.claude\\plans\\warm-stargazing-quilt.md"
+        },
+        {
+          "label": "IntakeWorkflowEditor.tsx (current implementation)",
+          "path": "app/src/components/admin/IntakeWorkflowEditor.tsx"
+        },
+        {
+          "label": "IntakeStageEditor.tsx (current implementation)",
+          "path": "app/src/components/admin/IntakeStageEditor.tsx"
+        },
+        {
+          "label": "intakeValidation.ts (validation schema)",
+          "path": "app/src/lib/intakeValidation.ts"
+        }
+      ],
+      "originalProblemStatement": "The current admin intake workflow configuration exposes raw JSON and OData internals — conversion rules as a JSON textarea, field logical names like pmo_name and _pmo_targetteam_value, and OData bind syntax like pmo_PrimaryTeam@odata.bind. Administrators are not developers. They should never see field logical names, JSON, or OData syntax. The approver group input is a raw AAD group GUID text field with no lookup capability. No default workflow auto-creation exists, requiring manual configuration before any intake is possible.",
+      "proposedSolutionApproach": "Three changes: (1) Replace conversion rules JSON textarea with a visual two-column field mapper using dropdowns with human-readable labels — the component serializes to/from JSON internally. Add CONVERSION_FIELD_OPTIONS constant mapping allowed intake/project fields to labels with pre-determined transform types. (2) Replace approver group GUID text input with a dropdown populated from Dataverse team records (teamtype eq 2 for AAD group teams). Admin selects by name, component stores azureactivedirectoryobjectid. (3) Add Quick Setup button in IntakeWorkflowConfigSection that seeds a standard 3-stage workflow when no workflows exist.",
+      "architecturalConsiderations": [
+        "The visual mapper must serialize to the same ConversionRule[] JSON schema that intakeValidation.ts validates (intakeField, projectField, transform)",
+        "Lookup fields always use odata_bind transform, scalar fields always use direct — this is deterministic from the field selection and should not be exposed to the admin",
+        "The CONVERSION_FIELD_OPTIONS constant must stay in sync with the ALLOWED_INTAKE_FIELDS_FOR_MAPPING and ALLOWED_PROJECT_FIELDS sets in intakeValidation.ts",
+        "The AAD team dropdown reuses the same useTeams pattern from AdminSettingsPage but filters to teamtype eq 2 (AAD group teams)",
+        "No schema changes required — this is a UX-only change with no Dataverse impact"
+      ],
+      "dependenciesOrPrerequisites": [
+        {
+          "description": "Wave G1 intakeValidation.ts validation schema (defines ConversionRule[] contract)",
+          "status": "complete"
+        },
+        {
+          "description": "Wave G2 IntakeWorkflowEditor.tsx and IntakeStageEditor.tsx current implementations",
+          "status": "complete"
+        },
+        {
+          "description": "Existing useTeams pattern from AdminSettingsPage.tsx for team dropdown",
+          "status": "complete"
+        }
+      ],
+      "knownRisksOrTradeoffs": [
+        {
+          "description": "None significant — this is a UX-only change with no schema impact. The underlying JSON storage format and validation are unchanged.",
+          "impact": "low"
+        }
+      ],
+      "supportingResearchOrDesignNotes": [
+        {
+          "title": "Current state analysis",
+          "content": "The stage editor checkboxes for required fields and artifact types are already visual and correct — the problem is isolated to: (1) Conversion Rules — raw JSON textarea with logical field names and OData bind syntax, lives in IntakeWorkflowEditor.tsx. (2) Approver Group ID — raw AAD group GUID text input in IntakeStageEditor.tsx, same useTeams pattern from AdminSettingsPage can be reused but filtered to AAD-synced teams. (3) No default workflow auto-creation — system requires manual seeding before intake works."
+        },
+        {
+          "title": "Files to modify",
+          "content": "app/src/components/admin/IntakeWorkflowEditor.tsx (replace JSON textarea with visual mapper, add quick setup), app/src/components/admin/IntakeStageEditor.tsx (replace GUID input with team dropdown), app/src/lib/constants.ts (add CONVERSION_INTAKE_LABELS and CONVERSION_PROJECT_LABELS maps)."
+        },
+        {
+          "title": "Validation contract",
+          "content": "The visual mapper must produce the same JSON that intakeValidation.ts validateConversionRules() validates: an array of {intakeField, projectField, transform} objects where intakeField is from ALLOWED_INTAKE_FIELDS_FOR_MAPPING and projectField is from ALLOWED_PROJECT_FIELDS. Admin creates workflow using only dropdowns and checkboxes with no JSON visible; conversion rules serialize to same JSON format the intakeValidation.ts module expects; approver group resolves to AAD team name; quick setup creates functional 3-stage workflow."
+        }
+      ],
+      "reintroductionGuidance": {
+        "reintroductionTrigger": "When admin UX polish is prioritized, or before UAT/production deployment where non-developer administrators will be configuring intake workflows.",
+        "targetCycleHint": "Admin UX polish sprint before UAT promotion"
+      },
+      "preservedContext": {
+        "fullContextText": "The stage editor checkboxes for required fields and artifact types are already visual and correct — the problem is isolated to: (1) Conversion Rules — raw JSON textarea with logical field names and OData bind syntax, lives in IntakeWorkflowEditor.tsx. (2) Approver Group ID — raw AAD group GUID text input in IntakeStageEditor.tsx, same useTeams pattern from AdminSettingsPage can be reused but filtered to AAD-synced teams. (3) No default workflow auto-creation — system requires manual seeding before intake works. Files to modify: app/src/components/admin/IntakeWorkflowEditor.tsx (replace JSON textarea with visual mapper, add quick setup), app/src/components/admin/IntakeStageEditor.tsx (replace GUID input with team dropdown), app/src/lib/constants.ts (add CONVERSION_INTAKE_LABELS and CONVERSION_PROJECT_LABELS maps). Validation: admin creates workflow using only dropdowns and checkboxes with no JSON visible; conversion rules serialize to same JSON format the intakeValidation.ts module expects; approver group resolves to AAD team name; quick setup creates functional 3-stage workflow. The visual mapper must serialize to the same ConversionRule[] JSON schema that intakeValidation.ts validates (intakeField, projectField, transform). Lookup fields always use odata_bind transform, scalar fields always use direct — this is deterministic from the field selection and should not be exposed to the admin. The CONVERSION_FIELD_OPTIONS constant must stay in sync with the ALLOWED_INTAKE_FIELDS_FOR_MAPPING and ALLOWED_PROJECT_FIELDS sets in intakeValidation.ts."
+      },
+      "history": [
+        {
+          "timestampUtc": "2026-04-22T15:45:00Z",
+          "action": "intake",
+          "note": "Deferred from Wave G2 Admin Configuration UX. Functional but exposes raw JSON/OData internals to non-developer administrators. UX-only fix with no schema impact.",
+          "reference": {
+            "label": "Governed Intake Workflow + Initiation Redesign Plan",
+            "path": "C:\\Users\\z232630\\.claude\\plans\\warm-stargazing-quilt.md"
+          }
+        }
+      ],
+      "defermentDecision": {
+        "deferredOnUtc": "2026-04-22T15:45:00Z",
+        "deferredBy": "Wave G2 implementation review",
+        "requiresSupervisoryReview": false,
+        "supervisoryReview": {
+          "status": "not-required"
+        }
+      },
+      "tags": [
+        "admin-ux",
+        "intake-workflow",
+        "no-schema-change",
+        "low-effort",
+        "pre-uat"
+      ]
+    }
+  ]
+}

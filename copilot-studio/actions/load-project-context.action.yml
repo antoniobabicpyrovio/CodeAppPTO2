@@ -1,0 +1,67 @@
+# Copilot Studio action — load-project-context
+#
+# PURPOSE: Load enriched project context for explain-project-health and
+#          draft-weekly-status-report topics.
+#
+# ACTION DEFINITION FORMAT NOTE:
+#   This file specifies the Dataverse read action that Copilot Studio will invoke.
+#   Before authoring this as a live action, confirm the supported Dataverse connector
+#   operation format from the Copilot Studio action builder or pac solution unpack output.
+#   The format below reflects the Dataverse connector action schema.
+#
+# OUTPUT CONTRACT (mirrors app/src/ai/context/projectContext.ts — ProjectContext):
+#   project:        msdyn_project record (full, including custom pmo_ columns)
+#   risks:          msdyn_projectrisk[] (active, statecode=0)
+#   issues:         msdyn_projectissue[] (active, statecode=0)
+#   statusReports:  msdyn_projectstatusreport[] (most recent first, top 3)
+#   sourceStatus:   array of { source, state, detail } for each data source
+#
+# DATAVERSE ENTITIES:
+#   msdyn_project          — project record (getProject API, record-level read)
+#   msdyn_projectrisk      — project risks (listProjectRisks, filter by msdyn_project)
+#   msdyn_projectissue     — project issues (listProjectIssues, filter by msdyn_project)
+#   msdyn_projectstatusreport — status reports (listStatusReports, filter by msdyn_project, top 3)
+#
+# GROUNDING RULES (from app/src/ai/grounding/signals.ts):
+#   Health codes:      189330000 = On Track, 189330001 = At Risk, 189330002 = Off Track
+#   Active filter:     statecode === 0
+#   Progress field:    msdyn_progress (0–1 stored, normalize to 0–100)
+#   Health fields:     proj_overallhealth, proj_schedulehealth, proj_efforthealth, proj_financialhealth
+#
+# SAFETY RULES:
+#   Read-only. No writes. Advisory output only.
+#
+# COPILOT STUDIO ACTION DEFINITION (author in portal or via solution pack):
+kind: ConnectorActionNode
+displayName: Load Project Context
+description: >
+  Loads the enriched project context for Mira advisory topics.
+  Returns project record, risks, issues, and recent status reports.
+schemaName: pmo_LoadProjectContext
+# INPUTS:
+inputs:
+  - name: projectId
+    type: String
+    description: The msdyn_project GUID for the active project
+    required: true
+# OUTPUTS:
+outputs:
+  - name: projectRecord
+    type: Object
+    description: Full msdyn_project record
+  - name: risks
+    type: Array
+    description: Active project risks (statecode=0)
+  - name: issues
+    type: Array
+    description: Active project issues (statecode=0)
+  - name: statusReports
+    type: Array
+    description: Most recent 3 status reports
+# CONNECTOR: Dataverse
+# ENVIRONMENT VARIABLE: default.cds (matches power.config.json databaseReferences)
+# OPERATIONS SEQUENCE:
+#   1. GET msdyn_project?$filter=msdyn_projectid eq '@{inputs.projectId}'
+#   2. GET msdyn_projectrisks?$filter=_msdyn_project_value eq '@{inputs.projectId}' and statecode eq 0
+#   3. GET msdyn_projectissues?$filter=_msdyn_project_value eq '@{inputs.projectId}' and statecode eq 0
+#   4. GET msdyn_projectstatusreports?$filter=_msdyn_project_value eq '@{inputs.projectId}'&$orderby=createdon desc&$top=3

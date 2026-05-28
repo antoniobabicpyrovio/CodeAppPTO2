@@ -1,0 +1,12 @@
+<customapirequestparameter uniquename="RecordType">
+  <description default="Intake Request / Program / Project / Task">
+    <label description="Intake Request / Program / Project / Task" languagecode="1033" />
+  </description>
+  <displayname default="Record Type">
+    <label description="Record Type" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>pmo_UploadDocumentToSharePoint.RecordType</name>
+  <type>10</type>
+</customapirequestparameter>

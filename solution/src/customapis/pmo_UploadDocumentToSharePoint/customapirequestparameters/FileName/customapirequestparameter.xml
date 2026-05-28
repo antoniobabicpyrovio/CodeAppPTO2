@@ -1,0 +1,12 @@
+<customapirequestparameter uniquename="FileName">
+  <description default="Original file name">
+    <label description="Original file name" languagecode="1033" />
+  </description>
+  <displayname default="File Name">
+    <label description="File Name" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>pmo_UploadDocumentToSharePoint.FileName</name>
+  <type>10</type>
+</customapirequestparameter>

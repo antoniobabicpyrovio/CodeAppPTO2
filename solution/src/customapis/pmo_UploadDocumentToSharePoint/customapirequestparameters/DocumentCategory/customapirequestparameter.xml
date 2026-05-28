@@ -1,0 +1,12 @@
+<customapirequestparameter uniquename="DocumentCategory">
+  <description default="Category label (free text)">
+    <label description="Category label (free text)" languagecode="1033" />
+  </description>
+  <displayname default="Document Category">
+    <label description="Document Category" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>1</isoptional>
+  <name>pmo_UploadDocumentToSharePoint.DocumentCategory</name>
+  <type>10</type>
+</customapirequestparameter>

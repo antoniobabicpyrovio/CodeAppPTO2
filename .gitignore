@@ -1,0 +1,26 @@
+# Build artifacts
+dist/
+solution-output/
+bin/
+
+# Session and tool artifacts
+.claude/
+
+# Node
+node_modules/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor — allow extensions.json, block personal settings
+.vscode/*
+!.vscode/extensions.json
+
+# Code workspace files (personal, not team-shared)
+*.code-workspace

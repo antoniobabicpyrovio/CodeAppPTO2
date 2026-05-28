@@ -1,0 +1,124 @@
+kind: TaskDialog
+response:
+  activity:
+  mode: Generated
+
+inputs:
+  - kind: ManualTaskInput
+    propertyName: organization
+    value: https://nexusrcm-dev.crm.dynamics.com/
+
+  - kind: ManualTaskInput
+    propertyName: entityName
+    value: pmo_projectrequests
+
+  - kind: ManualTaskInput
+    propertyName: item.'pmo_status'
+    value: 893460020
+
+  - kind: ManualTaskInput
+    propertyName: item.'pmo_name'
+    value: PMO Request via Mira
+
+  - kind: AutomaticTaskInput
+    propertyName: item.'pmo_submissiontext'
+
+modelDisplayName: Create Intake Record
+modelDescription: Creates a new PMO project intake request record in Dataverse from the user's submitted text.
+
+outputs:
+  - propertyName: pmo_projectrequestid
+    name: Record ID
+    description: Unique identifier of the created intake request record
+
+  - propertyName: pmo_name
+    name: Name
+
+  - propertyName: pmo_submissiontext
+    name: Submission Text
+
+  - propertyName: pmo_status
+    name: Request Status
+
+action:
+  kind: InvokeConnectorTaskAction
+  connectionReference: pmo_mira.shared_commondataserviceforapps.shared-commondataser-b20762f9-bfbd-4130-989c-d9c69250ba63
+  connectionProperties:
+    usageDescription: Please sign in to allow Mira to submit a PMO intake request on your behalf.
+    mode: Invoker
+
+  operationId: CreateRecordWithOrganization
+  dynamicInputSchema:
+    properties:
+      entityName:
+        displayName: Table name
+        description: Choose a table
+        isRequired: true
+        order: 1
+        dynamicValuesConfig:
+          capability: List
+        type: String
+
+      item:
+        displayName: Row Item
+        description: Row to create
+        isRequired: true
+        order: 2
+        type:
+          kind: Record
+          properties:
+            pmo_name:
+              displayName: Name
+              isRequired: true
+              order: 0
+              type: String
+
+            pmo_submissiontext:
+              displayName: Submission Text
+              order: 1
+              type: String
+
+            pmo_status:
+              displayName: Request Status
+              isRequired: true
+              order: 2
+              dynamicValuesConfig:
+                capability: List
+              type: Number
+
+      organization:
+        displayName: Environment
+        description: Choose an environment
+        isRequired: true
+        order: 0
+        dynamicValuesConfig:
+          capability: List
+        type: String
+
+  dynamicOutputSchema:
+    kind: Record
+    properties:
+      pmo_projectrequestid:
+        displayName: Record ID
+        description: Unique identifier for entity instances
+        order: 0
+        type: String
+
+      pmo_name:
+        displayName: Name
+        order: 1
+        type: String
+
+      pmo_submissiontext:
+        displayName: Submission Text
+        order: 2
+        type: String
+
+      pmo_status:
+        displayName: Request Status
+        order: 3
+        dynamicValuesConfig:
+          capability: List
+        type: Number
+
+outputMode: All

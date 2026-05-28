@@ -1,0 +1,59 @@
+# Copilot Studio action — load-program-context-enriched
+#
+# PURPOSE: Load enriched program context for explain-program-health topic.
+#
+# CRITICAL RULE (from app/src/api/programs.api.ts):
+#   Program LIST queries intentionally exclude rollup fields.
+#   This action MUST use a record-level fetch (getProgram) NOT a list query.
+#   Mira must NOT rely on list-level rollups for Program health answers.
+#
+# OUTPUT CONTRACT (mirrors app/src/ai/context/programContext.ts — ProgramContext):
+#   program:         msdyn_projectprogram record (full, record-level)
+#   projects:        msdyn_project[] (related to this program, active)
+#   statusReports:   msdyn_projectstatusreport[] (most recent per project)
+#   statusFreshness: per-project freshness map { fresh|stale|missing, daysSince }
+#   rollup:          { total, onTrack, atRisk, offTrack } computed client-side
+#   sourceStatus:    array of { source, state, detail }
+#
+# DATAVERSE ENTITIES:
+#   msdyn_projectprogram    — program record (record-level: getProgram)
+#   msdyn_project           — related projects (listProjects, filter by _msdyn_program_value)
+#   msdyn_projectstatusreport — status reports per project (most recent)
+#
+# GROUNDING RULES (from app/src/ai/grounding/signals.ts):
+#   Health codes:       189330000 = On Track, 189330001 = At Risk, 189330002 = Off Track
+#   Health fields:      proj_overallhealth, proj_schedulehealth, proj_financialhealth
+#   Stale threshold:    14 days (ProgramStatusFreshness in programContext.ts)
+#   Rollup signals:     Active Projects count, At Risk / Off Track cluster count
+#
+# SAFETY RULES:
+#   Read-only. No writes. Advisory output only.
+#
+kind: ConnectorActionNode
+displayName: Load Program Context (Enriched)
+description: >
+  Loads enriched program context using record-level fetch + related project composition.
+  MUST NOT use list-level rollups for program health data.
+schemaName: pmo_LoadProgramContextEnriched
+inputs:
+  - name: programId
+    type: String
+    description: The msdyn_projectprogram GUID for the active program
+    required: true
+outputs:
+  - name: programRecord
+    type: Object
+    description: Full msdyn_projectprogram record (record-level)
+  - name: relatedProjects
+    type: Array
+    description: Active projects related to this program
+  - name: statusReports
+    type: Array
+    description: Most recent status report per related project
+# OPERATIONS SEQUENCE:
+#   1. GET msdyn_projectprograms(@{inputs.programId})   <-- record-level, NOT list
+#   2. GET msdyn_projects?$filter=_msdyn_program_value eq '@{inputs.programId}' and statecode eq 0
+#   3. For each project: GET msdyn_projectstatusreports?$filter=_msdyn_project_value eq '<id>'
+#                        &$orderby=createdon desc&$top=1
+#   4. Compute statusFreshness per project: days since most recent report
+#      Stale threshold: 14 days (per programContext.ts)

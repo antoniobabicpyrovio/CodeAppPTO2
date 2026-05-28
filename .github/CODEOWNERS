@@ -1,0 +1,6 @@
+# CODEOWNERS — corp-fin-bi-pmo-cfr-solution
+# All files default to the corp-fin-bi team.
+# .github/ paths require corp-fin-bi-admins review.
+
+*                   @cvs-health-source-code/corp-fin-bi
+/.github/           @cvs-health-source-code/corp-fin-bi-admins

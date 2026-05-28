@@ -1,0 +1,11 @@
+<customapiresponseproperty uniquename="SharePointUrl">
+  <description default="Direct URL to the uploaded file">
+    <label description="Direct URL to the uploaded file" languagecode="1033" />
+  </description>
+  <displayname default="SharePoint URL">
+    <label description="SharePoint URL" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>pmo_UploadDocumentToSharePoint.SharePointUrl</name>
+  <type>10</type>
+</customapiresponseproperty>

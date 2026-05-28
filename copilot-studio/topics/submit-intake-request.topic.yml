@@ -1,0 +1,328 @@
+# Copilot Studio topic — submit-intake-request
+#
+# MIRRORS: app/src/ai/topics (Phase 2 — no direct TypeScript mirror; mutations.ts handles write)
+# OUTPUT CONTRACT: IntakeRequestDraft → IntakeRequestMutation (app/src/ai/contracts.ts)
+# MODE: draft (user reviews → approval gate → createIntakeRequestRecord mutation)
+#
+# TRIGGER: User wants to submit a new PMO request (project, change, enhancement, operational need).
+# CONTEXT: Route and entity context prefilled from MiraPanel channel data.
+#
+# INTENT TRIGGER PHRASES:
+#   - "submit a request"
+#   - "new PMO request"
+#   - "I need to request a project"
+#   - "raise a change request"
+#   - "start an intake"
+#   - "submit intake"
+#   - "I have a request for the PMO"
+#   - "request a new project"
+#   - "I need help from the PMO"
+#
+# ROUTING CONFIDENCE CLASSIFICATION:
+#   routingConfidence >= 70:  'high'   — direct to summary confirmation
+#   routingConfidence 40–69:  'medium' — ask 1–2 enrichment follow-up questions
+#   routingConfidence < 40:   'low'    — ask enrichment follow-ups, flag for PMO triage review
+#
+# REQUEST TYPE TAXONOMY (pmo_requesttype optionset — from constants.ts):
+#   893460000 = NewProject     — new project scope requiring PM assignment
+#   893460001 = ChangeRequest  — change to existing project scope, timeline, or budget
+#   893460002 = Enhancement    — improvement to an existing system or process
+#   893460003 = Support        — operational issue, break-fix, or ongoing support need
+#
+# LINE OF BUSINESS TAXONOMY (pmo_lineofbusiness optionset — from constants.ts):
+#   893460100 = Enteral         — Enteral Nutrition line
+#   893460101 = InfusionEpic    — Infusion (Epic) line
+#   893460102 = InfusionMediAR  — Infusion (MediAR) line
+#   893460103 = All             — Cross-LOB / enterprise-wide
+#
+# EXTRACTED FIELDS JSON SCHEMA (stored in pmo_extractedfieldsjson):
+#   {
+#     "requestType":            number | null,    — REQUEST_TYPE optionset value
+#     "lineOfBusiness":         number | null,    — LINE_OF_BUSINESS optionset value
+#     "extractedTitle":         string,
+#     "urgency":                "critical" | "high" | "medium" | "low" | null,
+#     "affectedSystem":         string | null,    — system name as free text (lookup resolved by PMO)
+#     "impactedUsers":          string | null,
+#     "businessJustification":  string | null,
+#     "enrichmentComplete":     boolean
+#   }
+#
+# OUTPUT STRUCTURE (matches IntakeRequestDraft in contracts.ts):
+#   topicId:               'submit-intake-request'
+#   mode:                  'draft'
+#   submissionText:        string (full original user input)
+#   extractedTitle:        string (AI-derived short title)
+#   routingRecommendation: string (AI rationale for suggested team/type)
+#   routingConfidence:     number (0–100)
+#   extractedFieldsJson:   string (JSON per schema above)
+#   targetTeamId:          string | undefined (resolved if high confidence)
+#   lineOfBusiness:        number | undefined (LINE_OF_BUSINESS value if resolved)
+#   affectedSystemId:      string | undefined (cr87a_system GUID if identified)
+#   enrichmentPack:        string | undefined (follow-up Q&A summary)
+#   sourceStatus:          [{ source: 'route-context', state: 'ok' }]
+#   confidence:            'high' | 'medium' | 'low'
+#   generatedAt:           ISO timestamp
+#
+# SAFETY RULES:
+#   Draft only. No Dataverse writes in this topic.
+#   Submission goes through the app-side approval gate (MiraPanel → ApprovalGateDialog)
+#   or Copilot Studio confirmation step → create-intake-record action.
+#   This topic does NOT call create-intake-record — it builds the reviewable draft only.
+#   For channel submissions (Copilot Studio standalone), invoke create-intake-record
+#   action only after an explicit user confirmation step in the topic.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Submit Intake Request
+    triggerQueries:
+      - submit a request
+      - new PMO request
+      - I need to request a project
+      - raise a change request
+      - start an intake
+      - submit intake
+      - I have a request for the PMO
+      - request a new project
+      - I need help from the PMO
+  actions:
+    # ── Channel data prefill ──────────────────────────────────────────────────
+    - kind: SetVariable
+      variable: Topic.SourceRoute
+      value: =System.Activity.ChannelData.route
+    - kind: SetVariable
+      variable: Topic.SourceEntityId
+      value: =System.Activity.ChannelData.entityId
+    - kind: SetVariable
+      variable: Topic.SourceEntityType
+      value: =System.Activity.ChannelData.scope
+
+    # ── Step 1: Collect submission text ──────────────────────────────────────
+    - kind: Question
+      id: question_submissionText
+      variable: Topic.SubmissionText
+      prompt: >
+        I can help you submit a PMO request. Please describe what you need — include
+        the business need, the affected system or process, and any urgency or timeline
+        you're aware of. The more detail you provide, the better Mira can route your
+        request to the right team.
+      entity: StringPrebuiltEntity
+
+    # ── Step 2: AI extraction pass ────────────────────────────────────────────
+    - kind: GenerativeAnswers
+      id: generative_extract
+      prompt: |
+        You are Mira, a PMO intake specialist. Extract and classify the following submission.
+
+        USER SUBMISSION:
+        {{Topic.SubmissionText}}
+
+        TASK: Produce a structured intake extraction. Use this EXACT JSON format for extractedFieldsJson:
+        {
+          "requestType": <893460000 | 893460001 | 893460002 | 893460003 | null>,
+          "lineOfBusiness": <893460100 | 893460101 | 893460102 | 893460103 | null>,
+          "extractedTitle": "<concise 5–10 word title>",
+          "urgency": <"critical" | "high" | "medium" | "low" | null>,
+          "affectedSystem": "<system name or null>",
+          "impactedUsers": "<description or null>",
+          "businessJustification": "<1–2 sentence justification or null>",
+          "enrichmentComplete": false
+        }
+
+        REQUEST TYPE RULES:
+        - NewProject (893460000): net-new project scope, needs PM assignment, new budget
+        - ChangeRequest (893460001): change to existing project (scope, timeline, budget)
+        - Enhancement (893460002): improvement to existing system or process
+        - Support (893460003): operational issue, break-fix, ongoing support need
+
+        LINE OF BUSINESS RULES:
+        - Enteral (893460100): enteral nutrition / EN operations
+        - InfusionEpic (893460101): infusion services using Epic EHR
+        - InfusionMediAR (893460102): infusion services using MediAR billing
+        - All (893460103): cross-LOB or enterprise-wide
+
+        ROUTING CONFIDENCE (routingConfidence: integer 0–100):
+        - 85–100: request type, LOB, title, and urgency are all clearly identifiable
+        - 70–84: most fields resolvable, minor ambiguity in type or LOB
+        - 40–69: significant ambiguity — type or LOB unclear, follow-up questions needed
+        - 0–39: very thin submission — cannot reliably route without more information
+
+        ROUTING RECOMMENDATION (routingRecommendation: 2–3 sentences):
+        - Summarize what type of request this appears to be and why
+        - Name the most likely LOB and any ambiguity
+        - Note what additional information would increase confidence
+
+        OUTPUT (respond ONLY with this JSON — no markdown fences, no extra text):
+        {
+          "extractedTitle": "...",
+          "routingRecommendation": "...",
+          "routingConfidence": <0–100>,
+          "extractedFieldsJson": "{...escaped JSON string...}",
+          "lineOfBusiness": <optionset integer or null>,
+          "confidence": <"high" | "medium" | "low">
+        }
+      inputs:
+        submissionText: =Topic.SubmissionText
+      output: Topic.ExtractionResult
+
+    # ── Step 3: Parse extraction results ──────────────────────────────────────
+    - kind: SetVariable
+      variable: Topic.RoutingConfidence
+      value: =Topic.ExtractionResult.routingConfidence
+    - kind: SetVariable
+      variable: Topic.ExtractedTitle
+      value: =Topic.ExtractionResult.extractedTitle
+    - kind: SetVariable
+      variable: Topic.RoutingRecommendation
+      value: =Topic.ExtractionResult.routingRecommendation
+    - kind: SetVariable
+      variable: Topic.ExtractedFieldsJson
+      value: =Topic.ExtractionResult.extractedFieldsJson
+    - kind: SetVariable
+      variable: Topic.LineOfBusiness
+      value: =Topic.ExtractionResult.lineOfBusiness
+    - kind: SetVariable
+      variable: Topic.DraftConfidence
+      value: =Topic.ExtractionResult.confidence
+
+    # ── Step 4: Enrichment branch (confidence < 70) ───────────────────────────
+    - kind: ConditionGroup
+      conditions:
+        - kind: Condition
+          condition: =Topic.RoutingConfidence < 70
+          actions:
+            - kind: Question
+              id: question_enrichment_lob
+              variable: Topic.EnrichmentLob
+              prompt: >
+                To route your request accurately, I need a bit more information.
+                Which line of business is primarily affected?
+                - **Enteral** (enteral nutrition operations)
+                - **Infusion Epic** (infusion services — Epic EHR)
+                - **Infusion MediAR** (infusion services — MediAR billing)
+                - **All / Cross-LOB** (enterprise-wide or multiple lines)
+                - **Not sure** (PMO will determine during triage)
+              entity: StringPrebuiltEntity
+
+            - kind: Question
+              id: question_enrichment_urgency
+              variable: Topic.EnrichmentUrgency
+              prompt: >
+                How urgent is this request? Please choose one:
+                - **Critical** — production impact or compliance risk, needs same-week action
+                - **High** — significant business impact, needs action within 2 weeks
+                - **Medium** — important but can follow normal prioritization
+                - **Low** — informational, low urgency
+              entity: StringPrebuiltEntity
+
+            - kind: SetVariable
+              variable: Topic.EnrichmentPack
+              value: '=Concatenate("LOB clarification: ", Topic.EnrichmentLob, " | Urgency clarification: ", Topic.EnrichmentUrgency)'
+
+    # ── Step 5: Build final draft summary ────────────────────────────────────
+    - kind: GenerativeAnswers
+      id: generative_summary
+      prompt: |
+        You are Mira. Produce a human-readable draft summary for the user to review before submitting.
+
+        EXTRACTED TITLE: {{Topic.ExtractedTitle}}
+        SUBMISSION TEXT: {{Topic.SubmissionText}}
+        ROUTING RECOMMENDATION: {{Topic.RoutingRecommendation}}
+        ROUTING CONFIDENCE: {{Topic.RoutingConfidence}}%
+        CONFIDENCE LEVEL: {{Topic.DraftConfidence}}
+        ENRICHMENT (if any): {{Topic.EnrichmentPack}}
+
+        FORMAT YOUR RESPONSE AS:
+        ---
+        **PMO Intake Request — Draft for Review**
+
+        **Title:** <extractedTitle>
+
+        **Your request:** <1–2 sentence summary of the submission>
+
+        **Routing recommendation:** <routingRecommendation>
+
+        **Routing confidence:** <routingConfidence>% (<confidence label>)
+        <If confidence < 70: "⚠ PMO will review routing during triage — additional clarification may be requested.">
+        <If confidence >= 70: "✓ Request appears well-formed for routing.">
+
+        **Next step:** Review the draft above and select **Submit** to create your PMO intake record, or **Cancel** to discard.
+
+        ---
+        Do NOT imply the record has been submitted. This is a review step only.
+      inputs:
+        extractedTitle: =Topic.ExtractedTitle
+        submissionText: =Topic.SubmissionText
+        routingRecommendation: =Topic.RoutingRecommendation
+        routingConfidence: =Topic.RoutingConfidence
+        draftConfidence: =Topic.DraftConfidence
+        enrichmentPack: =Topic.EnrichmentPack
+      output: Topic.DraftSummary
+
+    - kind: SendActivity
+      activity:
+        text: =Topic.DraftSummary
+
+    # ── Step 6: Confirmation (Copilot Studio standalone channel only) ─────────
+    # NOTE: When this topic is triggered from MiraPanel (web app), the draft is
+    # returned to the app where the ApprovalGateDialog handles submit / cancel.
+    # In the Copilot Studio chat channel, this confirmation step gates the write.
+    - kind: Question
+      id: question_confirm
+      variable: Topic.UserConfirmed
+      prompt: Do you want to submit this request to the PMO? Reply **Yes** to submit or **No** to cancel.
+      entity: BooleanPrebuiltEntity
+
+    - kind: ConditionGroup
+      conditions:
+        - kind: Condition
+          condition: =Topic.UserConfirmed
+          actions:
+            - kind: InvokeAction
+              id: invoke_createIntakeRecord
+              actionName: pmo_CreateIntakeRecord
+              inputs:
+                extractedTitle: =Topic.ExtractedTitle
+                submissionText: =Topic.SubmissionText
+                routingConfidence: =Topic.RoutingConfidence
+                routingRecommendation: =Topic.RoutingRecommendation
+                extractedFieldsJson: =Topic.ExtractedFieldsJson
+                lineOfBusiness: =Topic.LineOfBusiness
+              outputs:
+                recordId: Topic.RecordId
+                creationResult: Topic.CreationResult
+                failureReason: Topic.FailureReason
+
+            - kind: ConditionGroup
+              conditions:
+                - kind: Condition
+                  condition: =Topic.CreationResult = "success"
+                  actions:
+                    - kind: SendActivity
+                      activity:
+                        text: >
+                          Your PMO intake request has been submitted successfully.
+                          Reference ID: **{{Topic.RecordId}}**
+
+                          A PMO team member will review your request during the next triage cycle.
+                          You can track status in the **Intake** section of the PMO app.
+
+              elseActions:
+                - kind: SendActivity
+                  activity:
+                    text: >
+                      There was a problem submitting your request.
+                      Error: {{Topic.FailureReason}}
+
+                      Please try again or contact your PMO administrator.
+
+        - kind: Condition
+          condition: =Not(Topic.UserConfirmed)
+          actions:
+            - kind: SendActivity
+              activity:
+                text: >
+                  Your request draft has been discarded. No record was created.
+                  If you'd like to start over, just say "submit a request" again.

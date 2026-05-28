@@ -1,0 +1,77 @@
+name: Feature Request
+description: Propose a new feature or capability
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: risk-tier
+    attributes:
+      label: Risk Tier
+      description: Select the risk tier for this work. See CONTRIBUTING.md for definitions.
+      options:
+        - Normal — routine application feature or bug fix
+        - High-Risk — touches protected paths, shared hotspot files, schema registration, or CI/CD
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      description: Which domain does this feature belong to?
+      options:
+        - Application Domain (pages, components, hooks, models, api)
+        - Platform Domain (lib, providers, ai, mira, CI/CD, solution, scripts)
+        - Cross-Domain (spans both — requires coordination)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: What should this feature do? Include the user-facing behavior and any Dataverse entities involved.
+      placeholder: Describe the feature and its expected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: List the conditions that must be true for this feature to be considered complete.
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: dataverse-impact
+    attributes:
+      label: Dataverse Impact
+      description: List any new tables, option-set values, custom API actions, or Power Automate flows this feature requires. Write "None" if no Dataverse changes are needed.
+      placeholder: |
+        - New tables:
+        - New option-set values:
+        - New custom API actions:
+        - Power Automate flows affected:
+    validations:
+      required: true
+
+  - type: textarea
+    id: shared-files
+    attributes:
+      label: Shared Files Affected
+      description: List any shared hotspot files this feature will modify (App.tsx, Sidebar.tsx, constants.ts, dataverseClient.ts, ConfigurationProvider.tsx, index.css, package-lock.json). Write "None" if no shared files are affected.
+      placeholder: None
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or references.
+      placeholder: Optional additional context.
+    validations:
+      required: false

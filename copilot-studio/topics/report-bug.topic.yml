@@ -1,0 +1,123 @@
+# Copilot Studio topic — report-bug
+#
+# MIRRORS: app/src/ai/topics/reportBug.ts
+# OUTPUT CONTRACT: BugReportDraft (app/src/ai/contracts.ts)
+# MODE: draft (user must review before submitting — no Dataverse writes)
+#
+# TRIGGER: User reports a defect, bug, or unexpected app behavior.
+# CONTEXT: Route and entity context prefilled from MiraPanel channel data.
+#
+# INTENT TRIGGER PHRASES:
+#   - "report bug"
+#   - "I found a bug"
+#   - "app issue"
+#   - "something is broken"
+#   - "unexpected error"
+#   - "this page has a problem"
+#   - "the app isn't working correctly"
+#
+# CONFIDENCE CLASSIFICATION (from reportBug.ts — classifyConfidence):
+#   description.trim().length === 0:  'low'
+#   description.trim().length < 25:   'medium'
+#   description.trim().length >= 25:  'high'
+#
+# STRUCTURED DRAFT FORMAT (from reportBug.ts — buildStructuredBugDraft):
+#   "Title: [Draft] Bug observed in PMO app"
+#   "Route: <sourceRoute or '/'>"
+#   "Entity Type: <sourceEntityType or 'other'>"
+#   "Entity Id: <sourceEntityId or 'Not provided'>"
+#   ""
+#   "Observed behavior:"
+#   <userDescription if present, else 'User did not provide a description.'>
+#   ""
+#   "Expected behavior:"
+#   "[Add expected behavior before submitting.]"
+#   ""
+#   "Repro steps:"
+#   "1. [Add step 1]"
+#   "2. [Add step 2]"
+#   "3. [Add step 3]"
+#   ""
+#   "Impact:"
+#   "[Add business/user impact.]"
+#
+# OUTPUT STRUCTURE (matches BugReportDraft in contracts.ts):
+#   topicId:          'report-bug'
+#   mode:             'draft'
+#   sourceRoute:      string (from channel data, default '/')
+#   sourceEntityId:   string | undefined
+#   sourceEntityType: 'project' | 'program' | 'other' (normalized, default 'other')
+#   userDescription:  string (from user question)
+#   structuredDraft:  string (from structured draft format above)
+#   sourceStatus:     [{ source: 'route-context', state: 'ok' }]
+#   confidence:       'high' | 'medium' | 'low' (from confidence classification)
+#   generatedAt:      ISO timestamp
+#
+# SAFETY RULES:
+#   Draft only. No Dataverse writes. User must review before submitting.
+#   Submission goes through the app-side approval gate (MiraPanel → ApprovalGateDialog).
+#   This topic does NOT create records — it creates a reviewable draft only.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Report Bug
+    triggerQueries:
+      - report bug
+      - I found a bug
+      - app issue
+      - something is broken
+      - unexpected error
+      - this page has a problem
+      - the app isn't working correctly
+  actions:
+    - kind: SetVariable
+      variable: Topic.SourceRoute
+      value: =System.Activity.ChannelData.route
+    - kind: SetVariable
+      variable: Topic.SourceEntityId
+      value: =System.Activity.ChannelData.entityId
+    - kind: SetVariable
+      variable: Topic.SourceEntityType
+      value: =System.Activity.ChannelData.scope
+    - kind: Question
+      id: question_bugDescription
+      variable: Topic.UserDescription
+      prompt: Please describe the bug you observed. Include what happened and what you expected.
+      entity: StringPrebuiltEntity
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Create a structured bug report draft.
+        Use EXACTLY this format for structuredDraft:
+          "Title: [Draft] Bug observed in PMO app"
+          "Route: <sourceRoute or '/'>"
+          "Entity Type: <sourceEntityType or 'other'>"
+          "Entity Id: <sourceEntityId or 'Not provided'>"
+          ""
+          "Observed behavior:"
+          <userDescription if non-empty, else: 'User did not provide a description.'>
+          ""
+          "Expected behavior:"
+          "[Add expected behavior before submitting.]"
+          ""
+          "Repro steps:"
+          "1. [Add step 1]"
+          "2. [Add step 2]"
+          "3. [Add step 3]"
+          ""
+          "Impact:"
+          "[Add business/user impact.]"
+        CONFIDENCE: 'low' if description is empty, 'medium' if <25 chars, 'high' if >=25 chars.
+        This is a DRAFT for user review. Do NOT imply the bug was submitted.
+        Remind the user to review and fill in the placeholders before submitting.
+      inputs:
+        sourceRoute: =Topic.SourceRoute
+        sourceEntityId: =Topic.SourceEntityId
+        sourceEntityType: =Topic.SourceEntityType
+        userDescription: =Topic.UserDescription
+      output: Topic.Draft
+    - kind: SendActivity
+      activity:
+        text: =Topic.Draft

@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{4aabf594-b30a-490d-bf97-89c67c6777fe}</formid>
+    <IntroducedVersion>9.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab name="general" verticallayout="true" id="{0840971E-E63D-4FD3-825F-44A6203D7B28}" IsUserDefined="0" expanded="true" showlabel="true" labelid="{3dc1c132-1383-4750-b5c0-f9cec07e8c0b}" ordinalvalue="0">
+          <columns>
+            <column width="34%" id="0">
+              <sections>
+                <section name="General" showlabel="false" showbar="false" id="{DC61780B-91D3-43C4-90F8-BE6F1EACD317}" IsUserDefined="0" labelwidth="100" labelid="{e953b72a-84ae-4b95-8b39-9d70a9879fce}" ordinalvalue="0">
+                  <rows>
+                    <row>
+                      <cell id="{6727C94D-0CD6-4003-AE6D-484652C0A578}" labelid="{236cb254-6ecd-43bb-83d7-9130cbf1327f}" ordinalvalue="10000">
+                        <labels>
+                          <label description="Team Name" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{BF695E55-85F5-4534-8980-8932A4D18263}" labelid="{7ec21100-6ed0-4f7f-b5ed-b92a024d1cd4}" visible="false" ordinalvalue="10001">
+                        <labels>
+                          <label description="Business Unit" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2248D866-7813-404D-8479-2210483745D9}" labelid="{ca16a160-8eb3-4632-aacd-284287f8f446}" ordinalvalue="10002">
+                        <labels>
+                          <label description="Administrator" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{e3dca6c4-ae67-419b-93c7-41d574042dfd}" showlabel="true" locklevel="1" visible="false" labelid="{650853ca-0bbb-4d49-b7e3-916f302264f0}" ordinalvalue="10003">
+                        <labels>
+                          <label description="Team Type" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{4a7fa588-2145-49bd-adef-5a99bebc3298}" locklevel="0" rowspan="1" colspan="1" ordinalvalue="10004" solutionaction="Added">
+                        <labels>
+                          <label description="PMO Team" languagecode="1033" />
+                        </labels>
+                        <control id="cr741_pmoteam" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="cr741_pmoteam" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="Description" showlabel="false" showbar="false" locklevel="0" id="{510EDF68-06A4-4C18-8DE1-150251BD0A19}" IsUserDefined="0" layout="varwidth" columns="1" labelwidth="115" celllabelalignment="Left" celllabelposition="Top" labelid="{a1e6c49e-8163-4e81-ad5c-288a85a6bc4c}" ordinalvalue="1">
+                  <rows>
+                    <row>
+                      <cell id="{BD50EAB1-25F3-464D-ADAB-FEFAE73F6F96}" showlabel="true" locklevel="0" labelid="{1b5cedc2-3656-470d-be96-7eff052a05b5}" ordinalvalue="10000">
+                        <labels>
+                          <label description="Description" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <footer id="{bd1db91a-135b-4852-8ea4-7c8292f93f4f}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left" solutionaction="Added">
+        <rows>
+          <row>
+            <cell id="{0a573f63-5c7d-4f8f-ba08-b6d86a097670}" showlabel="false" ordinalvalue="10000">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{984fa537-63c5-417d-be13-c5a79062fbb0}" showlabel="false" ordinalvalue="20001">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{d3e8e479-c220-46d8-8273-26622d5bbb95}" showlabel="false" ordinalvalue="30002">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+    </form>
+    <LocalizedNames>
+      <LocalizedName description="Team form – Business" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Default Team Form for BusinessEdition" languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

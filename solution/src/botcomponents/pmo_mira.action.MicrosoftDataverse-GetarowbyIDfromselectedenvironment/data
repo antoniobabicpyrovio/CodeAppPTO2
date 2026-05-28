@@ -1,0 +1,15 @@
+kind: TaskDialog
+modelDisplayName: Get a row by ID from selected environment
+modelDescription: Get a row from a table in a Power Platform environment.
+outputs:
+  - propertyName: Response
+
+action:
+  kind: InvokeConnectorTaskAction
+  connectionReference: pmo_mira.shared_commondataserviceforapps.shared-commondataser-b20762f9-bfbd-4130-989c-d9c69250ba63
+  connectionProperties:
+    mode: Invoker
+
+  operationId: GetItemWithOrganization
+
+outputMode: All

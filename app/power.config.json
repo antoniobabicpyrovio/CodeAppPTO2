@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "appId": "",
+  "appDisplayName": "PTO Manager",
+  "region": "unitedstates",
+  "environmentId": "",
+  "description": "Pyrovio PTO management application — submit and track time-off requests.",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {},
+  "databaseReferences": {
+    "default.cds": {
+      "dataSources": {
+        "systemusers": {
+          "entitySetName": "systemusers",
+          "logicalName": "systemuser",
+          "isHidden": true
+        },
+        "roles": {
+          "entitySetName": "roles",
+          "logicalName": "role",
+          "isHidden": true
+        },
+        "teams": {
+          "entitySetName": "teams",
+          "logicalName": "team",
+          "isHidden": true
+        },
+        "organizations": {
+          "entitySetName": "organizations",
+          "logicalName": "organization",
+          "isHidden": true
+        }
+      },
+      "environmentVariableName": ""
+    }
+  }
+}

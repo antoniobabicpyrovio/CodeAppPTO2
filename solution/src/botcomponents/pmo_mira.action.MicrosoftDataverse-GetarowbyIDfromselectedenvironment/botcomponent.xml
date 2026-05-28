@@ -1,0 +1,10 @@
+<botcomponent schemaname="pmo_mira.action.MicrosoftDataverse-GetarowbyIDfromselectedenvironment">
+  <componenttype>9</componenttype>
+  <iscustomizable>0</iscustomizable>
+  <name>Microsoft Dataverse - Get a row by ID from selected environment</name>
+  <parentbotid>
+    <schemaname>pmo_mira</schemaname>
+  </parentbotid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</botcomponent>

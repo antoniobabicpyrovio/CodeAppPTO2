@@ -1,0 +1,109 @@
+# Copilot Studio topic — identify-blockers-overdue-work
+#
+# MIRRORS: app/src/ai/topics/identifyBlockersOverdueWork.ts
+# OUTPUT CONTRACT: BlockersOverdueWorkAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# TRIGGER: User requests a blockers and overdue work summary.
+# CONTEXT: Scope and entityId from MiraPanel app route (project/program/portfolio).
+#
+# INTENT TRIGGER PHRASES:
+#   - "identify blockers"
+#   - "overdue work"
+#   - "what is blocked"
+#   - "past due items"
+#   - "blockers and overdue summary"
+#   - "what work is overdue"
+#   - "show me blocked projects"
+#
+# BLOCKERS DETECTION (from identifyBlockersOverdueWork.ts):
+#   Rule: project has activeIssues > 0 OR activeRisks > 1
+#   Fields: proj_activeissues, proj_activerisks
+#   Output format per blocker item: "<project name>: N issue(s), N risk(s)."
+#   Cap at 8 items maximum.
+#
+# OVERDUE DETECTION (from identifyBlockersOverdueWork.ts):
+#   Rule: msdyn_finish is set AND msdyn_finish < today
+#   Output format per overdue item: "<project name> is past planned finish date (MM/DD/YYYY)."
+#   Cap at 8 items maximum.
+#
+# RECOMMENDED ACTIONS (deterministic, always include exactly these 3):
+#   1. "Escalate top blockers in weekly PMO governance review."
+#   2. "Assign dated owners for overdue recovery actions."
+#   3. "Re-baseline milestones only after mitigation plans are approved."
+#
+# SUMMARY LOGIC:
+#   If blockers=0 AND overdueItems=0:
+#     "No material blocker or overdue work signals were detected from current context."
+#   Else:
+#     "Detected N blocker signal(s) and N overdue work item(s)."
+#
+# OUTPUT STRUCTURE (matches BlockersOverdueWorkAdvisory in contracts.ts):
+#   topicId:            'identify-blockers-overdue-work'
+#   mode:               'advisory'
+#   scope:              'project' | 'program' | 'portfolio'
+#   summary:            1-sentence summary (from summary logic above)
+#   blockers:           string array (project blocker items, max 8)
+#   overdueItems:       string array (overdue project items, max 8)
+#   recommendedActions: string array (3 deterministic recommendations)
+#   sourceStatus:       per-source status array
+#   confidence:         'high' (all ok) | 'low' (any source failed)
+#   generatedAt:        ISO timestamp
+#
+# SAFETY RULES:
+#   Advisory only. No write-intent. No automated escalation triggers.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Identify Blockers and Overdue Work
+    triggerQueries:
+      - identify blockers
+      - overdue work
+      - what is blocked
+      - past due items
+      - blockers and overdue summary
+      - what work is overdue
+      - show me blocked projects
+  actions:
+    - kind: SetVariable
+      variable: Topic.Scope
+      value: =System.Activity.ChannelData.scope
+    - kind: SetVariable
+      variable: Topic.EntityId
+      value: =System.Activity.ChannelData.entityId
+    - kind: InvokeAction
+      actionName: pmo_LoadPortfolioTriageContext
+      inputs:
+        scope: =Topic.Scope
+        entityId: =Topic.EntityId
+      outputs:
+        projects: Topic.Projects
+        programs: Topic.Programs
+        latestStatus: Topic.LatestStatus
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Identify blockers and overdue work from the data below.
+        BLOCKER DETECTION — include a project if: proj_activeissues > 0 OR proj_activerisks > 1.
+          Format each item: "<project name>: N issue(s), N risk(s)."
+          Return max 8 items.
+        OVERDUE DETECTION — include a project if: msdyn_finish is set AND msdyn_finish < today.
+          Format each item: "<project name> is past planned finish date (MM/DD/YYYY)."
+          Return max 8 items.
+        SUMMARY:
+          If blockers=0 AND overdueItems=0: "No material blocker or overdue work signals were detected from current context."
+          Else: "Detected N blocker signal(s) and N overdue work item(s)."
+        RECOMMENDED ACTIONS — always include exactly:
+          1. "Escalate top blockers in weekly PMO governance review."
+          2. "Assign dated owners for overdue recovery actions."
+          3. "Re-baseline milestones only after mitigation plans are approved."
+        Advisory only — no write-intent output.
+      inputs:
+        projects: =Topic.Projects
+        latestStatus: =Topic.LatestStatus
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory

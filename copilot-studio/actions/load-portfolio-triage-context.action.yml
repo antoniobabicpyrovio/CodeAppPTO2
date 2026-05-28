@@ -1,0 +1,68 @@
+# Copilot Studio action — load-portfolio-triage-context
+#
+# PURPOSE: Load triage context for pmo-triage-needs-attention topic.
+#
+# OUTPUT CONTRACT (mirrors app/src/ai/context/triageContext.ts — TriageContext):
+#   scope:        'project' | 'program' | 'portfolio'
+#   projects:     msdyn_project[] (active, filtered by scope)
+#   programs:     msdyn_projectprogram[] (active, for program/portfolio scope)
+#   latestStatus: map of projectId -> most recent msdyn_projectstatusreport
+#   sourceStatus: array of { source, state, detail }
+#
+# DATAVERSE ENTITIES:
+#   msdyn_projectprogram    — programs (list, active)
+#   msdyn_project           — projects (list, active, filtered by scope)
+#   msdyn_projectstatusreport — latest status per project (top 1 per project)
+#
+# SCORING RULES (from app/src/ai/topics/pmoTriageNeedsAttention.ts — scoreProject):
+#   Off Track overall health:   +5 points
+#   At Risk overall health:     +3 points
+#   Overdue (finish date past): +2 points
+#   High risk load (>2 active): +3 points
+#   High issue load (>2 active):+2 points
+#   Stale status (>14 days):    +2 points
+#   Missing status (no reports):+2 points
+#   Projects with score > 0 are ranked descending; top 8 returned.
+#
+# SAFETY RULES:
+#   Read-only. No writes. Advisory output only.
+#
+kind: ConnectorActionNode
+displayName: Load Portfolio Triage Context
+description: >
+  Loads portfolio or scoped triage context for Mira needs-attention ranking.
+  Returns active projects, programs, and latest status signal per project.
+schemaName: pmo_LoadPortfolioTriageContext
+inputs:
+  - name: scope
+    type: String
+    description: "Triage scope: 'project' | 'program' | 'portfolio'"
+    required: true
+  - name: entityId
+    type: String
+    description: The GUID of the scoped project or program (null for portfolio scope)
+    required: false
+outputs:
+  - name: projects
+    type: Array
+    description: Active projects in scope
+  - name: programs
+    type: Array
+    description: Active programs (program/portfolio scope only)
+  - name: latestStatus
+    type: Array
+    description: One most-recent status report per project (deduplicated)
+# OPERATIONS SEQUENCE (portfolio scope):
+#   1. GET msdyn_projectprograms?$filter=statecode eq 0&$select=<core fields>
+#   2. GET msdyn_projects?$filter=statecode eq 0&$select=<core fields including health columns>
+#   3. For unique projects: GET msdyn_projectstatusreports?$filter=_msdyn_project_value eq '<id>'
+#                           &$orderby=createdon desc&$top=1
+#   Dedup: one status report per project (triageContext.ts deduplication logic)
+#
+# OPERATIONS SEQUENCE (program scope):
+#   1. GET msdyn_projects?$filter=statecode eq 0 and _msdyn_program_value eq '@{inputs.entityId}'
+#   2. For each project: fetch most recent status report (as above)
+#
+# OPERATIONS SEQUENCE (project scope):
+#   1. GET msdyn_project?$filter=msdyn_projectid eq '@{inputs.entityId}'
+#   2. Fetch most recent status report for this project

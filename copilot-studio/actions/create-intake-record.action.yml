@@ -1,0 +1,101 @@
+# Copilot Studio action — create-intake-record
+#
+# PURPOSE: Create a pmo_projectrequest record from a confirmed intake draft.
+#          Called from submit-intake-request topic after user confirmation.
+#          Mirrors: app/src/ai/mutations.ts — createIntakeRequestRecord()
+#
+# OUTPUT CONTRACT: IntakeRequestMutation (app/src/ai/contracts.ts)
+#   creationResult: 'success' | 'failed' | 'pending'
+#   recordId:       GUID of the created pmo_projectrequest
+#
+# ENTITY WRITTEN:
+#   pmo_projectrequest (EntitySetName: pmo_projectrequests)
+#   pmo_status default: Draft (REQUEST_STATUS.Draft)
+#
+# DATAVERSE FIELDS:
+#   pmo_name                    — extractedTitle
+#   pmo_submissiontext          — full submissionText (original user input)
+#   pmo_routingconfidence       — routingConfidence (Whole Number, 0–100)
+#   pmo_routingrecommendation   — routingRecommendation (free text)
+#   pmo_extractedfieldsjson     — extractedFieldsJson (JSON string of enriched fields)
+#   pmo_lineofbusiness          — lineOfBusiness (optionset integer, nullable)
+#   pmo_TargetTeam@odata.bind   — /teams({targetTeamId}) if provided
+#   pmo_AffectedSystem@odata.bind — /cr87a_systems({affectedSystemId}) if provided
+#
+# SAFETY RULES:
+#   Requires prior user confirmation (approval gate in MiraPanel or Copilot Studio confirm step).
+#   This action WRITES to Dataverse — only invoke after user has reviewed and confirmed.
+#   On failure, return creationResult: 'failed' with failureReason populated.
+#   Never retry silently. Surface failure to user with actionable message.
+#
+# CONNECTOR: Dataverse
+# ENVIRONMENT VARIABLE: default.cds (matches power.config.json databaseReferences)
+#
+kind: ConnectorActionNode
+displayName: Create Intake Record
+description: >
+  Creates a new PMO intake request record (pmo_projectrequest) in Dataverse after
+  the user has reviewed and confirmed the AI-extracted draft. Returns the new record GUID.
+schemaName: pmo_CreateIntakeRecord
+
+inputs:
+  - name: extractedTitle
+    type: String
+    description: Short descriptive title extracted from the user's submission
+    required: true
+  - name: submissionText
+    type: String
+    description: Full original submission text from the user
+    required: true
+  - name: routingConfidence
+    type: Integer
+    description: AI routing confidence score (0–100)
+    required: true
+  - name: routingRecommendation
+    type: String
+    description: AI-generated routing rationale and target team recommendation
+    required: true
+  - name: extractedFieldsJson
+    type: String
+    description: JSON string of all AI-extracted structured fields (title, LOB, type, system, enrichment)
+    required: true
+  - name: lineOfBusiness
+    type: Integer
+    description: Line of business optionset integer (nullable — omit if unknown)
+    required: false
+  - name: targetTeamId
+    type: String
+    description: GUID of the target Dataverse team (omit if not resolved)
+    required: false
+  - name: affectedSystemId
+    type: String
+    description: GUID of the affected cr87a_system record (omit if not identified)
+    required: false
+
+outputs:
+  - name: recordId
+    type: String
+    description: GUID of the created pmo_projectrequest record (empty string on failure)
+  - name: creationResult
+    type: String
+    description: "'success' | 'failed' | 'pending'"
+  - name: failureReason
+    type: String
+    description: Human-readable failure message (empty on success)
+  - name: telemetryId
+    type: String
+    description: Unique telemetry identifier for this mutation attempt
+
+# OPERATIONS SEQUENCE:
+#   POST pmo_projectrequests
+#   Body:
+#     pmo_name:                   inputs.extractedTitle
+#     pmo_submissiontext:         inputs.submissionText
+#     pmo_routingconfidence:      inputs.routingConfidence
+#     pmo_routingrecommendation:  inputs.routingRecommendation
+#     pmo_extractedfieldsjson:    inputs.extractedFieldsJson
+#     pmo_lineofbusiness:         inputs.lineOfBusiness       (omit if null)
+#     pmo_TargetTeam@odata.bind:  /teams({targetTeamId})     (omit if null)
+#     pmo_AffectedSystem@odata.bind: /cr87a_systems({affectedSystemId}) (omit if null)
+#   On 201: return { recordId: response.pmo_projectrequestid, creationResult: 'success' }
+#   On error: return { recordId: '', creationResult: 'failed', failureReason: error.message }

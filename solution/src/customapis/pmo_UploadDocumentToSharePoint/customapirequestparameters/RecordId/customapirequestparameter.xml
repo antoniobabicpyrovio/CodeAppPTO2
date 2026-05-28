@@ -1,0 +1,12 @@
+<customapirequestparameter uniquename="RecordId">
+  <description default="GUID of the parent Dataverse record">
+    <label description="GUID of the parent Dataverse record" languagecode="1033" />
+  </description>
+  <displayname default="Record ID">
+    <label description="Record ID" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>pmo_UploadDocumentToSharePoint.RecordId</name>
+  <type>10</type>
+</customapirequestparameter>

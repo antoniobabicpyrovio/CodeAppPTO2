@@ -1,0 +1,11 @@
+<customapiresponseproperty uniquename="SharePointItemId">
+  <description default="List item ID in SharePoint">
+    <label description="List item ID in SharePoint" languagecode="1033" />
+  </description>
+  <displayname default="SharePoint Item ID">
+    <label description="SharePoint Item ID" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <name>pmo_UploadDocumentToSharePoint.SharePointItemId</name>
+  <type>7</type>
+</customapiresponseproperty>

@@ -1,0 +1,10 @@
+<bot schemaname="pmo_mira">
+  <authenticationmode>2</authenticationmode>
+  <authenticationtrigger>1</authenticationtrigger>
+  <iscustomizable>0</iscustomizable>
+  <language>1033</language>
+  <name>Mira</name>
+  <runtimeprovider>0</runtimeprovider>
+  <template>BI Standards Agent Bootstrap Template-1.0.0</template>
+  <timezoneruleversionnumber>4</timezoneruleversionnumber>
+</bot>

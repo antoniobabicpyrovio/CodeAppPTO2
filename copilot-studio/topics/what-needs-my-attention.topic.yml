@@ -1,0 +1,88 @@
+# Copilot Studio topic — what-needs-my-attention
+#
+# MIRRORS: app/src/ai/topics/whatNeedsMyAttention.ts
+# OUTPUT CONTRACT: NeedsAttentionAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# TRIGGER: User asks what needs attention on the active project.
+# CONTEXT: Requires active project page context (projectId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - what needs my attention
+#   - what should I focus on for this project
+#   - what needs attention on this project
+#   - what is most urgent here
+#   - what should I look at first
+#
+# DATA SOURCES:
+#   1. pmo_LoadProjectContext
+#   2. pmo_LoadProjectOpenTasksContext
+#
+# ATTENTION RULES (from whatNeedsMyAttention.ts):
+#   - Escalate Off Track / At Risk project health
+#   - Surface stale or missing status reporting baseline
+#   - Surface overdue tasks first, then urgent unassigned tasks
+#   - Surface active issues and the highest-exposure active risk
+#   - Cap ranked items at 6
+#
+# SAFETY RULES:
+#   Advisory only. No task, issue, or risk updates from this topic.
+
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: What Needs My Attention
+    triggerQueries:
+      - what needs my attention
+      - what should I focus on for this project
+      - what needs attention on this project
+      - what is most urgent here
+      - what should I look at first
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        risks: Topic.Risks
+        issues: Topic.Issues
+        statusReports: Topic.StatusReports
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectOpenTasksContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        tasks: Topic.Tasks
+        assignments: Topic.Assignments
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Return a direct attention summary for the active project.
+        Use ONLY the provided project, risk, issue, status, task, and assignment context.
+        PRIORITIZE:
+          - Off Track / At Risk health
+          - Missing or stale status reporting
+          - Overdue tasks
+          - Urgent unassigned tasks
+          - Active issues
+          - Highest-exposure active risk
+        Return:
+          - a one-sentence summary
+          - up to 6 ranked attention items with category, title, detail, severity, and recommendedAction
+        Advisory only — no write-intent output.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        risks: =Topic.Risks
+        issues: =Topic.Issues
+        statusReports: =Topic.StatusReports
+        tasks: =Topic.Tasks
+        assignments: =Topic.Assignments
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory

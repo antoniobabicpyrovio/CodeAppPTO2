@@ -1,0 +1,15 @@
+<customapi uniquename="pmo_UploadDocumentToSharePoint">
+  <allowedcustomprocessingsteptype>2</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Uploads a file to the AppDocuments SharePoint library with PMO metadata columns.">
+    <label description="Uploads a file to the AppDocuments SharePoint library with PMO metadata columns." languagecode="1033" />
+  </description>
+  <displayname default="Upload Document to SharePoint">
+    <label description="Upload Document to SharePoint" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>pmo_UploadDocumentToSharePoint</name>
+  <workflowsdkstepenabled>1</workflowsdkstepenabled>
+</customapi>

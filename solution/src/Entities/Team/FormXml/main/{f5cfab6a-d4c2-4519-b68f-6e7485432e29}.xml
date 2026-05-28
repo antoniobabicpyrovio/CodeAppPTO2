@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{f5cfab6a-d4c2-4519-b68f-6e7485432e29}</formid>
+    <IntroducedVersion>5.0.0.0</IntroducedVersion>
+    <FormPresentation>0</FormPresentation>
+    <FormActivationState>0</FormActivationState>
+    <form>
+      <tabs>
+        <tab name="general" verticallayout="true" id="{c6821abf-090a-41ed-9026-6601693b4349}" IsUserDefined="0" ordinalvalue="0">
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section name="section 1" showlabel="false" showbar="false" id="{ec388a62-2959-4d89-a994-3b7d93ab98e2}" IsUserDefined="0" labelwidth="190" ordinalvalue="0">
+                  <rows>
+                    <row>
+                      <cell id="{ed6dd19b-6fec-4607-b09d-5481961de0af}" ordinalvalue="10000">
+                        <labels>
+                          <label description="Team Name" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{88b2b5f7-2e70-4262-bf57-75427b684719}" ordinalvalue="20001">
+                        <labels>
+                          <label description="Business Unit" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{10D44F8A-E7D3-4f75-9A8F-0BA5344EAE99}" ordinalvalue="10002">
+                        <labels>
+                          <label description="Administrator" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{04B1F337-5751-4f9c-8340-A734EC03DA6B}" ordinalvalue="20003">
+                        <labels>
+                          <label description="Default Queue" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{96c2e086-9cbe-48ed-a469-7d1511d8c74e}" ordinalvalue="10004">
+                        <labels>
+                          <label description="Team Type" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{773e4f3d-94d3-4fbc-ac61-92717f94a222}" ordinalvalue="20005" solutionaction="Removed" />
+                    </row>
+                    <row>
+                      <cell id="{ab2c1384-96ec-4367-9148-218104866a24}" locklevel="0" rowspan="1" colspan="1" ordinalvalue="20005" solutionaction="Added">
+                        <labels>
+                          <label description="PMO Team" languagecode="1033" />
+                        </labels>
+                        <control id="cr741_pmoteam" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="cr741_pmoteam" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="desc" showlabel="false" showbar="false" id="{6049e787-8970-4876-b3b7-900e6f08f70b}" IsUserDefined="0" height="auto" labelwidth="190" ordinalvalue="1">
+                  <rows>
+                    <row>
+                      <cell colspan="2" showlabel="true" rowspan="5" auto="true" id="{c9ffa507-c088-47e8-bcaa-2def8ba19a83}" ordinalvalue="10000">
+                        <labels>
+                          <label description="Description" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{d0a70f7b-1832-4923-ab18-ea4c2e9f52b6}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left" solutionaction="Added">
+        <rows>
+          <row>
+            <cell id="{56f2ea29-b95e-4831-97c3-e78b9f868bbf}" showlabel="false" ordinalvalue="10000">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{13c94271-d644-40c2-9661-96cf7d072822}" showlabel="false" ordinalvalue="20001">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{83c41f84-0aad-4baa-914a-16a0141886dc}" showlabel="false" ordinalvalue="30002">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{79dbd88a-0baf-4c33-a242-757b51aacc60}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left" solutionaction="Added">
+        <rows>
+          <row>
+            <cell id="{2b323cf5-6117-4eea-8b85-b8dd18aa71a5}" showlabel="false" ordinalvalue="10000">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{1c20ebb2-4019-43f5-a875-d85fb68e631a}" showlabel="false" ordinalvalue="20001">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{38f1f625-40f6-4248-8959-459873d866a1}" showlabel="false" ordinalvalue="30002">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true" solutionaction="Added">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

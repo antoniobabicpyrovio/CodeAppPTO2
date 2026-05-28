@@ -1,0 +1,6 @@
+<catalogassignments>
+  <catalogassignment catalogid.uniquename="pmo_DocumentActions" object.uniquename="pmo_UploadDocumentToSharePoint" objectidtype="customapi">
+    <iscustomizable>1</iscustomizable>
+    <name>pmo_UploadDocumentToSharePoint</name>
+  </catalogassignment>
+</catalogassignments>

@@ -1,0 +1,491 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.26042.168" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26042.168" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26042.00168">
+  <SolutionManifest>
+    <UniqueName>CFRProjectManagement</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="CFR Project Management" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions />
+    <Version>1.2.5.1</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>PMOTool</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Project Management Tool" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Project Management Tool" languagecode="1033" />
+      </Descriptions>
+      <EMailAddress>Nexus_SystemAdmins@CVSHealth.com</EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>pmo</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>89346</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="msdyn_project" behavior="0" />
+      <RootComponent type="1" schemaName="msdyn_projectprogram" behavior="1" />
+      <RootComponent type="1" schemaName="pmo_appsetting" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_documentlink" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_gatesetitem" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_gatesettemplate" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_intakeclarification" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_notification" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectartifactstatus" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectbaseline" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectcloseout" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectdecision" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectgate" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectgatedecision" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectmeetinglink" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectrequest" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projectteam" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_projecttemplate" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_requiredartifact" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_telemetryevent" behavior="0" />
+      <RootComponent type="1" schemaName="pmo_userfeedback" behavior="0" />
+      <RootComponent type="1" schemaName="systemuser" behavior="1" />
+      <RootComponent type="1" schemaName="team" behavior="0" />
+      <RootComponent type="20" id="{275ec709-6038-f111-88b4-6045bdd9f8fd}" behavior="0" />
+      <RootComponent type="20" id="{495ec709-6038-f111-88b4-6045bdd9f8fd}" behavior="0" />
+      <RootComponent type="20" id="{c6af530c-6038-f111-88b4-6045bdd9f227}" behavior="0" />
+      <RootComponent type="29" id="{0a72e74c-803d-f111-88b4-6045bdd9fbbe}" behavior="0" />
+      <RootComponent type="29" id="{217d7b06-7d3d-f111-88b4-6045bdd9fbbe}" behavior="0" />
+      <RootComponent type="29" id="{b007b5ca-a359-eb11-a812-000d3a31e53d}" behavior="0" />
+      <RootComponent type="29" id="{c128369d-303d-f111-88b4-6045bdd9fbbe}" behavior="0" />
+      <RootComponent type="29" id="{c899dd9f-113f-f111-88b4-6045bdd9fbbe}" behavior="0" />
+    </RootComponents>
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="1" schemaName="agenticscenario" displayName="Agentic Scenario" solution="msdyn_PowerPlatformAppAgents (1.0.0.15)">
+          <package appName="PowerPlatformAppAgentsApp Package" version="1.0.0.7">msdyn_PowerPlatformAppAgents (1.0.0.7)</package>
+          <package appName="Power Platform App Agents App" version="9.1.2026044.260416011">PowerPlatformAppAgentsApp_Anchor (9.1.2026044.260416011)</package>
+        </Required>
+        <Dependent type="1" schemaName="team" displayName="Team" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="bookableresourcebooking" displayName="Bookable Resource Booking" solution="msdynce_Scheduling (9.0.0.0)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="bookableresourcebookingheader" displayName="Bookable Resource Booking Header" solution="msdynce_Scheduling (9.0.0.0)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="componentversion" displayName="Component Version" solution="msdyn_ComponentVersioning (9.1.0.766)">
+          <package appName="Component Versioning Package" version="9.1.0.766">ComponentVersioning_Anchor (9.1.0.766)</package>
+        </Required>
+        <Dependent type="1" schemaName="team" displayName="Team" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_documentheader" displayName="Document Header" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_operationset" displayName="OperationSet" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_project" displayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectbaselinedata" displayName="Project Baseline Data" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectbucket" displayName="Project Bucket" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectchange" displayName="Change" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectgoal" displayName="Project Goal" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projecthistory" displayName="Project History" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectimportstaging" displayName="Project Import Staging" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectissue" displayName="Issue" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectlabel" displayName="Project Label" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectprogram" displayName="Program" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_projectprogram" displayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectrequest" displayName="Project Request" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectrisk" displayName="Risk" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectsprint" displayName="Project Sprint" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectstatusreport" displayName="Status Report" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projecttask" displayName="Project Task" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projecttaskdependency" displayName="Project Task Dependency" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectteam" displayName="Project Team Member" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_projectteamschannelmapping" displayName="Project Teams Channel Mapping" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_psserrorlog" displayName="PSS Error Log" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_replaylogsection" displayName="Replay Log Section" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_resourceassignment" displayName="Resource Assignment" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_resourcerequirement" displayName="Resource Requirement" solution="MicrosoftDynamicsScheduling (4.0.0.40)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="systemuser" displayName="SystemUser" parentSchemaName="" solution="msdyn_UserShareSecuredFields (1.0.0.0)" />
+        <Dependent type="1" schemaName="systemuser" displayName="SystemUser" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="teammobileofflineprofilemembership" displayName="TeamMobileOfflineProfileMembership" solution="MobileOfflineMembership (1.0.0.3)">
+          <package appName="MobileOfflineExtensionApp Package" version="1.0.0.0">MobileOfflineExtensionApp_Anchor (1.0.0.0)</package>
+        </Required>
+        <Dependent type="1" schemaName="team" displayName="Team" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyn_msdyn_documentheader_msdyn_project_MSProjectDocument" displayName="msdyn_msdyn_documentheader_msdyn_project_MSProjectDocument" parentSchemaName="msdyn_documentheader" parentDisplayName="Document Header" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="msdyn_msdyn_documentheader_msdyn_project_MSProjectDocument" displayName="msdyn_msdyn_documentheader_msdyn_project_MSProjectDocument" parentSchemaName="msdyn_documentheader" parentDisplayName="Document Header" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyn_msdyn_projectimportstaging_msdyn_project" displayName="msdyn_msdyn_projectimportstaging_msdyn_project" parentSchemaName="msdyn_projectimportstaging" parentDisplayName="Project Import Staging" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="msdyn_msdyn_projectimportstaging_msdyn_project" displayName="msdyn_msdyn_projectimportstaging_msdyn_project" parentSchemaName="msdyn_projectimportstaging" parentDisplayName="Project Import Staging" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyn_msdyn_workhourtemplate_msdyn_project_workhourtemplate" displayName="msdyn_msdyn_workhourtemplate_msdyn_project_workhourtemplate" parentSchemaName="msdyn_workhourtemplate" parentDisplayName="Work template" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="msdyn_msdyn_workhourtemplate_msdyn_project_workhourtemplate" displayName="msdyn_msdyn_workhourtemplate_msdyn_project_workhourtemplate" parentSchemaName="msdyn_workhourtemplate" parentDisplayName="Work template" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyn_organizationalunit_project" displayName="msdyn_organizationalunit_project" parentSchemaName="msdyn_organizationalunit" parentDisplayName="Organizational Unit" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="msdyn_organizationalunit_project" displayName="msdyn_organizationalunit_project" parentSchemaName="msdyn_organizationalunit" parentDisplayName="Organizational Unit" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyn_systemuser_msdyn_project_projectmanager" displayName="msdyn_systemuser_msdyn_project_projectmanager" parentSchemaName="systemuser" parentDisplayName="User" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="msdyn_systemuser_msdyn_project_projectmanager" displayName="msdyn_systemuser_msdyn_project_projectmanager" parentSchemaName="systemuser" parentDisplayName="User" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyn_team_msdyn_project_projectteamid" displayName="msdyn_team_msdyn_project_projectteamid" parentSchemaName="team" parentDisplayName="Team" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="msdyn_team_msdyn_project_projectteamid" displayName="msdyn_team_msdyn_project_projectteamid" parentSchemaName="team" parentDisplayName="Team" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="proj_msdyn_project_ExecutiveSponsor_SystemUser" displayName="proj_msdyn_project_ExecutiveSponsor_SystemUser" parentSchemaName="systemuser" parentDisplayName="User" solution="Project_for_the_web_Accelerator (1.7.0.5)" />
+        <Dependent type="10" schemaName="proj_msdyn_project_ExecutiveSponsor_SystemUser" displayName="proj_msdyn_project_ExecutiveSponsor_SystemUser" parentSchemaName="systemuser" parentDisplayName="User" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="proj_msdyn_project_Manager_SystemUser" displayName="proj_msdyn_project_Manager_SystemUser" parentSchemaName="systemuser" parentDisplayName="User" solution="Project_for_the_web_Accelerator (1.7.0.5)" />
+        <Dependent type="10" schemaName="proj_msdyn_project_Manager_SystemUser" displayName="proj_msdyn_project_Manager_SystemUser" parentSchemaName="systemuser" parentDisplayName="User" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="membershiptype" displayName="Membership Type" parentSchemaName="team" parentDisplayName="Team" solution="AuthorizationCore (1.131.0.0)">
+          <package appName="Authorization Package" version="1.7.0.0">msft_PrivilegeChecker (1.7.0.0)</package>
+        </Required>
+        <Dependent type="60" displayName="Team" parentDisplayName="Team" id="{7ba7fac1-1418-4335-935f-f7f8dfd73fcc}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_name" displayName="Name" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_msdyn_projectprogram_documentlink_Program" displayName="pmo_msdyn_projectprogram_documentlink_Program" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_name" displayName="Name" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_program_decision_Program" displayName="pmo_program_decision_Program" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_name" displayName="Name" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_program_meetinglink_Program" displayName="pmo_program_meetinglink_Program" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_name" displayName="Name" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_program_notification_Program" displayName="pmo_program_notification_Program" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_name" displayName="Name" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_projectprogram_projectrequest_ConvertedProgram" displayName="pmo_projectprogram_projectrequest_ConvertedProgram" parentSchemaName="msdyn_projectprogram" parentDisplayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_schedulemode" displayName="Schedule mode" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="2" schemaName="msdyn_schedulemode" displayName="Schedule mode" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_msdyn_project_documentlink_Project" displayName="pmo_msdyn_project_documentlink_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_artifactstatus_Project" displayName="pmo_project_artifactstatus_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_baseline_Project" displayName="pmo_project_baseline_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_closeout_Project" displayName="pmo_project_closeout_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_decision_Project" displayName="pmo_project_decision_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_gate_Project" displayName="pmo_project_gate_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_meetinglink_Project" displayName="pmo_project_meetinglink_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_notification_Project" displayName="pmo_project_notification_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_project_telemetry_Project" displayName="pmo_project_telemetry_Project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_projectrequest_ConvertedProject_msdyn_project" displayName="pmo_projectrequest_ConvertedProject_msdyn_project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_subject" displayName="Name" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="10" schemaName="pmo_projectteam_Project_msdyn_project" displayName="pmo_projectteam_Project_msdyn_project" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="proj_businessunit" displayName="Business Unit" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="Project_for_the_web_Accelerator (1.7.0.5)" />
+        <Dependent type="2" schemaName="proj_businessunit" displayName="Business Unit" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="proj_executivesponsor" displayName="Executive Sponsor" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="Project_for_the_web_Accelerator (1.7.0.5)" />
+        <Dependent type="2" schemaName="proj_executivesponsor" displayName="Executive Sponsor" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="proj_manager" displayName="Manager" parentSchemaName="msdyn_project" parentDisplayName="Project" solution="Project_for_the_web_Accelerator (1.7.0.5)" />
+        <Dependent type="2" schemaName="proj_manager" displayName="Manager" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="29" displayName="When a Request State is Updated to Approved create a Project" solution="Project_for_the_web_Accelerator (1.7.0.5)" id="{b007b5ca-a359-eb11-a812-000d3a31e53d}" />
+        <Dependent type="29" displayName="When a Request State is Updated to Approved create a Project" id="{b007b5ca-a359-eb11-a812-000d3a31e53d}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Team form – Business" parentDisplayName="Team" solution="msdynce_AppCommon (9.0.4.0066)" id="{4aabf594-b30a-490d-bf97-89c67c6777fe}">
+          <package appName="msdynce_AppCommon" version="9.0.26041.10001">msdynce_AppCommonAnchor (9.0.26041.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Team form – Business" parentDisplayName="Team" id="{4aabf594-b30a-490d-bf97-89c67c6777fe}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/SitemapIcons/SVG/Projects.svg" displayName="msdyn_/SitemapIcons/SVG/Projects.svg" solution="msdyn_ProjectServiceCore (1.0.0.87)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdyn_project" displayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="proj_Program_Icon" displayName="proj_Program_Icon" solution="Project_for_the_web_Accelerator (1.7.0.5)" />
+        <Dependent type="1" schemaName="msdyn_projectprogram" displayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="msdyn_schedulemode" displayName="Schedule Mode" solution="msdyn_ProjectServiceCore_Patch (1.0.166.34262)">
+          <package appName="Project Service Core" version="1.0.166.34262">msdyn_ProjectServiceCore_Anchor (1.0.166.34262)</package>
+        </Required>
+        <Dependent type="2" schemaName="msdyn_schedulemode" displayName="Schedule mode" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="proj_businessunit" displayName="Business Unit" solution="Project_for_the_web_Accelerator (1.7.0.5)" />
+        <Dependent type="2" schemaName="proj_businessunit" displayName="Business Unit" parentSchemaName="msdyn_project" parentDisplayName="Project" />
+      </MissingDependency>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

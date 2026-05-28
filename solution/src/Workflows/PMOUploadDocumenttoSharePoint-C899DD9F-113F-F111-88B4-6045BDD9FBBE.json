@@ -1,0 +1,117 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_sharepointonline": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pmo_PMOAppSharePoint"
+        },
+        "api": {
+          "name": "shared_sharepointonline"
+        }
+      },
+      "shared_commondataserviceforapps_1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pmo_mira.shared_commondataserviceforapps.shared-commondataser-b20762f9-bfbd-4130-989c-d9c69250ba63"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_upload_action_is_performed": {
+          "metadata": {
+            "operationMetadataId": "03789c1e-ec9c-4b0f-b02e-46f49eb7ad26"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps_1",
+              "operationId": "BusinessEventsTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "catalog": "pmo_PMODocumentManagement",
+              "category": "pmo_DocumentActions",
+              "subscriptionRequest/entityname": "none",
+              "subscriptionRequest/sdkmessagename": "pmo_UploadDocumentToSharePoint"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Create_file": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "b085624e-88b4-4aa4-8144-d549c5b06323"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_sharepointonline",
+              "operationId": "CreateFile",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+            },
+            "parameters": {
+              "dataset": "https://aetnao365.sharepoint.com/sites/Nexus-PMO",
+              "folderPath": "/AppDocuments",
+              "name": "@triggerOutputs()?['body/InputParameters/FileName']",
+              "body": "@base64ToBinary(triggerOutputs()?['body/InputParameters/FileContent'])"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Update_properties": {
+          "runAfter": {
+            "Create_file": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "15c3ce7e-eae6-499f-90a6-4e3f4494c322"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_sharepointonline",
+              "operationId": "PatchItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+            },
+            "parameters": {
+              "dataset": "https://aetnao365.sharepoint.com/sites/Nexus-PMO",
+              "table": "AppDocuments",
+              "id": "@outputs('Create_file')?['body/ItemId']",
+              "item/Title": "@triggerOutputs()?['body/InputParameters/RecordName']",
+              "item/RecordType": "@triggerOutputs()?['body/InputParameters/RecordType']",
+              "item/IntakeID": "@triggerOutputs()?['body/InputParameters/IntakeId']",
+              "item/ProgramID": "@triggerOutputs()?['body/InputParameters/ProgramId']",
+              "item/ProjectID": "@triggerOutputs()?['body/InputParameters/ProjectId']",
+              "item/TaskID": "@triggerOutputs()?['body/InputParameters/TaskId']",
+              "item/DocumentCategory": "@triggerOutputs()?['body/InputParameters/DocumentCategory']",
+              "item/UploadedBy/Claims": "@triggerOutputs()?['body/InputParameters/UserEmail']"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

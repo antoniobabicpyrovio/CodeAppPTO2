@@ -1,0 +1,12 @@
+<customapirequestparameter uniquename="FileContent">
+  <description default="Base64-encoded file content">
+    <label description="Base64-encoded file content" languagecode="1033" />
+  </description>
+  <displayname default="File Content">
+    <label description="File Content" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <name>pmo_UploadDocumentToSharePoint.FileContent</name>
+  <type>10</type>
+</customapirequestparameter>

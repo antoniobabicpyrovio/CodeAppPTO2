@@ -1,0 +1,15 @@
+kind: TaskDialog
+modelDisplayName: Load Portfolio Triage Context
+modelDescription: Load portfolio-level triage context for prioritization and escalation.
+outputs:
+  - propertyName: Response
+
+action:
+  kind: InvokeConnectorTaskAction
+  connectionReference: pmo_mira.shared_commondataserviceforapps.shared-commondataser-b20762f9-bfbd-4130-989c-d9c69250ba63
+  connectionProperties:
+    mode: Invoker
+
+  operationId: ListRecordsWithOrganization
+
+outputMode: All

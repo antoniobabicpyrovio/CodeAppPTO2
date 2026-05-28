@@ -1,0 +1,43 @@
+# Copilot Studio action — load-status-context
+#
+# PURPOSE: Load prior status report context for draft-weekly-status-report topic.
+#
+# OUTPUT CONTRACT (mirrors app/src/ai/context/statusContext.ts — StatusContext):
+#   reports:     msdyn_projectstatusreport[] (most recent first, top 3)
+#   mostRecent:  msdyn_projectstatusreport | null (the latest report or null)
+#   sourceStatus: { source: 'statusReports', state: 'ok'|'missing'|'failed', detail? }
+#
+# DATAVERSE ENTITIES:
+#   msdyn_projectstatusreport — status reports for the project
+#
+# GROUNDING RULES (from draftWeeklyStatusReport.ts):
+#   Prior context carry-forward:  top 2 lines from mostRecent.msdyn_plannedactivities
+#   Closed risks:                 risks where statecode changed to 1 in this period
+#   Resolved issues:              issues where statecode changed to 1 in this period
+#   Draft confidence boost:       +1 if mostRecent exists (carries prior context)
+#
+# SAFETY RULES:
+#   Read-only. No writes. Draft output only (user must review before saving).
+#
+kind: ConnectorActionNode
+displayName: Load Status Context
+description: >
+  Loads prior status report context to enable carry-forward in draft generation.
+  Returns the most recent 3 status reports for the project.
+schemaName: pmo_LoadStatusContext
+inputs:
+  - name: projectId
+    type: String
+    description: The msdyn_project GUID for the active project
+    required: true
+outputs:
+  - name: reports
+    type: Array
+    description: Up to 3 most recent status reports, newest first
+  - name: mostRecent
+    type: Object
+    description: The most recent status report, or null if none exists
+# OPERATIONS SEQUENCE:
+#   1. GET msdyn_projectstatusreports?$filter=_msdyn_project_value eq '@{inputs.projectId}'
+#      &$orderby=createdon desc&$top=3
+#   2. Set mostRecent = first item in results (or null if empty)

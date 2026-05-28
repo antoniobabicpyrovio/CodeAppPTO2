@@ -1,0 +1,31 @@
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: Explain Project Health
+    triggerQueries:
+      - explain project health
+      - how is my project doing
+      - what is the project status
+      - show project health signals
+      - is this project on track
+      - what are the risks on this project
+      - project delivery status
+  actions:
+    - kind: SetVariable
+      id: set_projectId
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: BeginDialog
+      id: invoke_loadProjectContext
+      displayName: Load Project Context
+      input: {}
+      dialog: pmo_mira.action.LoadProjectContext
+    - kind: SendActivity
+      id: sendActivity_advisory
+      activity:
+        text: I have analyzed the project context. Check the project health signals in the PMO app for detailed advisory.
+
+inputType: {}
+outputType: {}

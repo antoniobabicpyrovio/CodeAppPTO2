@@ -1,0 +1,94 @@
+# Copilot Studio topic — what-are-my-open-tasks
+#
+# MIRRORS: app/src/ai/topics/whatAreMyOpenTasks.ts
+# OUTPUT CONTRACT: OpenTasksAdvisory (app/src/ai/contracts.ts)
+# MODE: advisory (read-only, no mutation paths)
+#
+# TRIGGER: User asks what open tasks exist for the active project.
+# CONTEXT: Requires active project page context (projectId from MiraPanel app route).
+#
+# INTENT TRIGGER PHRASES:
+#   - what are my open tasks
+#   - show open tasks
+#   - what is still open on this project
+#   - list active tasks
+#   - what tasks still need work
+#   - what is not done yet
+#
+# OPEN TASK RULES (from whatAreMyOpenTasks.ts):
+#   Include only leaf tasks where:
+#     - msdyn_summary != true
+#     - task id does not start with optimistic-
+#     - statecode != 1
+#     - normalized progress < 100
+#   Progress normalization:
+#     - if 0 < msdyn_progress <= 1, multiply by 100
+#     - otherwise use msdyn_progress as-is and round
+#
+# DUE STATE RULES:
+#   overdue     = due date < today
+#   due-soon    = due date within the next 7 days
+#   on-track    = due date later than 7 days from today
+#   unscheduled = no msdyn_scheduledend and no msdyn_finish
+#   due date field = msdyn_scheduledend fallback msdyn_finish
+#
+# OWNERSHIP RULE:
+#   assigned   = task has one or more active msdyn_resourceassignment rows
+#   unassigned = task has no active assignments
+#
+# SUMMARY RULE:
+#   If no tasks remain: "No open leaf tasks are currently active for this project."
+#   Else: "Found N open task(s) for <project name>." plus priority-signal counts for overdue,
+#   due soon, and unassigned tasks when any count is non-zero.
+#
+# SAFETY RULES:
+#   Advisory only. Do not create or update tasks from this topic.
+#   Use only task and assignment data provided by the action.
+#
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    displayName: What Are My Open Tasks
+    triggerQueries:
+      - what are my open tasks
+      - show open tasks
+      - what is still open on this project
+      - list active tasks
+      - what tasks still need work
+      - what is not done yet
+  actions:
+    - kind: SetVariable
+      variable: Topic.ProjectId
+      value: =System.Activity.ChannelData.projectId
+    - kind: InvokeAction
+      actionName: pmo_LoadProjectOpenTasksContext
+      inputs:
+        projectId: =Topic.ProjectId
+      outputs:
+        projectRecord: Topic.ProjectRecord
+        tasks: Topic.Tasks
+        assignments: Topic.Assignments
+    - kind: GenerativeAnswers
+      prompt: |
+        You are Mira, a PMO delivery assistant. Summarize the active open tasks for the current project.
+        Use ONLY the provided project, task, and assignment data.
+        OPEN TASK RULES:
+          - include only leaf tasks that are not complete
+          - exclude summary tasks and optimistic client-only tasks
+          - determine task ownership from active assignments
+          - determine due state using scheduled end date, then finish date as fallback
+        Return:
+          - a one-sentence summary
+          - task counts for open, overdue, due soon, and unassigned
+          - a task list ordered by overdue first, then due soon, then unassigned gaps, then remaining tasks
+        Advisory only — no write-intent output.
+      inputs:
+        projectRecord: =Topic.ProjectRecord
+        tasks: =Topic.Tasks
+        assignments: =Topic.Assignments
+      output: Topic.Advisory
+    - kind: SendActivity
+      activity:
+        text: =Topic.Advisory
