@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSidebarState } from './AppShell';
@@ -10,9 +10,11 @@ import {
   ChevronDown,
   Settings,
   Users,
+  UserRound,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { useEffectiveAdminRole } from '../../providers/ConfigurationProvider';
+import { useAdminRole, useEffectiveAdminRole } from '../../providers/ConfigurationProvider';
+import { isImpersonatingUser, setImpersonatingUser, subscribeToImpersonation } from '../../lib/adminImpersonation';
 
 interface NavItem {
   path: string;
@@ -51,7 +53,10 @@ export function Sidebar() {
   const { collapsed, setCollapsed } = useSidebarState();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const realAdminRole = useAdminRole();
   const effectiveAdminRole = useEffectiveAdminRole();
+  const impersonating = useSyncExternalStore(subscribeToImpersonation, isImpersonatingUser);
+  const isAdmin = realAdminRole !== 'none';
   const [envLabel] = useState<string | null>(null);
 
   const visibleSections = NAV_SECTIONS
@@ -200,6 +205,45 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Act As User toggle — visible to real admins even while impersonating */}
+      {isAdmin && (
+        <div className="border-t border-sidebar-border px-2 py-2 shrink-0">
+          <button
+            onClick={() => setImpersonatingUser(!impersonating)}
+            title={collapsed ? (impersonating ? 'Act As User: ON — click to restore admin' : 'Act As User: OFF') : undefined}
+            className={cn(
+              'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm transition-all duration-150',
+              impersonating
+                ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'
+                : 'text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+            )}
+          >
+            <UserRound className="h-4 w-4 shrink-0" />
+            <AnimatePresence>
+              {!collapsed && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex-1 flex items-center justify-between overflow-hidden whitespace-nowrap"
+                >
+                  <span className="text-[13px] leading-none">Act As User</span>
+                  <span className={cn(
+                    'ml-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0',
+                    impersonating
+                      ? 'bg-amber-500/25 text-amber-700 dark:text-amber-300'
+                      : 'bg-sidebar-accent text-sidebar-foreground/40'
+                  )}>
+                    {impersonating ? 'ON' : 'OFF'}
+                  </span>
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+        </div>
+      )}
 
       {/* Collapse toggle */}
       <div className="border-t border-sidebar-border p-2 shrink-0">
