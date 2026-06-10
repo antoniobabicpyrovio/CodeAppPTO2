@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useSyncExternalStore, type ReactNode } from 'react';
+import { getContext } from '@microsoft/power-apps/app';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { listSettings, type AppSetting } from '../api/appSettings.api';
@@ -227,21 +228,39 @@ const HARDCODED_ADMINS = new Set([
 
 async function resolveAdminRole(): Promise<AdminRole> {
   if (isDemoModeActive()) return 'system_admin';
+
+  let email = '';
+
+  // Primary: Power Apps SDK context (reliable inside Power Apps iframe)
   try {
-    // Get the current user's email from Microsoft Graph.
-    const meRes = await fetch(
-      'https://graph.microsoft.com/v1.0/me?$select=mail,userPrincipalName',
-      { credentials: 'include', headers: { Accept: 'application/json' } },
-    );
-    if (!meRes.ok) return 'none';
-    const me = await meRes.json();
-    const email = ((me.mail || me.userPrincipalName) as string ?? '').toLowerCase();
-    if (!email) return 'none';
+    const ctx = await getContext();
+    const user = (ctx as unknown as Record<string, unknown>).user as Record<string, unknown> | undefined;
+    if (user) {
+      email = ((user.email ?? user.upn ?? user.userPrincipalName ?? '') as string).toLowerCase();
+    }
+  } catch { /* not running inside Power Apps runtime */ }
 
-    // Hardcoded owners always have admin access regardless of list contents.
-    if (HARDCODED_ADMINS.has(email)) return 'system_admin';
+  // Fallback: Microsoft Graph /me (works in dev/browser outside Power Apps)
+  if (!email) {
+    try {
+      const meRes = await fetch(
+        'https://graph.microsoft.com/v1.0/me?$select=mail,userPrincipalName',
+        { credentials: 'include', headers: { Accept: 'application/json' } },
+      );
+      if (meRes.ok) {
+        const me = await meRes.json();
+        email = ((me.mail ?? me.userPrincipalName ?? '') as string).toLowerCase();
+      }
+    } catch { /* Graph unavailable */ }
+  }
 
-    // Everyone whose email appears in the PTO Supervisors list is a PTO admin.
+  if (!email) return 'none';
+
+  // Hardcoded owners always have admin access regardless of list contents.
+  if (HARDCODED_ADMINS.has(email)) return 'system_admin';
+
+  // Everyone whose email appears in the PTO Supervisors list is a PTO admin.
+  try {
     const filter = encodeURIComponent(`fields/SupervisorEmail eq '${email}'`);
     const spRes = await fetch(
       `https://graph.microsoft.com/v1.0/sites/enoviogroup.sharepoint.com:/sites/Pyrovio:/lists/CodeAppPTOSupervisors/items?$expand=fields&$filter=${filter}&$top=1`,
@@ -251,11 +270,9 @@ async function resolveAdminRole(): Promise<AdminRole> {
       const data = await spRes.json();
       if ((data.value?.length ?? 0) > 0) return 'pmo_admin';
     }
+  } catch { /* supervisors list unavailable */ }
 
-    return 'none';
-  } catch {
-    return 'none';
-  }
+  return 'none';
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────

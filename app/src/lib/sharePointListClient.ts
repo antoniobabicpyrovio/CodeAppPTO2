@@ -73,10 +73,6 @@ const DEMO_SUPERVISORS: PtoSupervisor[] = [
   { id: 's3', SupervisorName: 'Antonio Babic', SupervisorEmail: 'antonio.babic@pyrovio.com', Department: 'Finance' },
 ];
 
-function isAccessDenied(status: number) {
-  return status === 401 || status === 403;
-}
-
 // ---------- Internal fetch helper ----------
 
 async function spFetch(listName: string, path: string, options?: RequestInit): Promise<Response> {
@@ -95,51 +91,51 @@ async function spFetch(listName: string, path: string, options?: RequestInit): P
 // ---------- API functions ----------
 
 export async function listPtoBalances(): Promise<PtoBalance[]> {
-  const res = await spFetch(
-    SP_LISTS.balances,
-    '/items?$expand=fields&$orderby=fields/EmployeeName asc',
-  );
-  if (isAccessDenied(res.status)) return DEMO_BALANCES;
-  if (!res.ok) throw new Error(`Failed to fetch PTO balances: ${res.status}`);
-  const json = await res.json();
-  return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
-    const f = item.fields;
-    return {
-      id: item.id,
-      EmployeeName: (f.EmployeeName as string) ?? '',
-      EmployeeId: (f.EmployeeId as string) ?? '',
-      SupervisorName: f.SupervisorName as string | undefined,
-      AvailableHours: Number(f.AvailableHours ?? 0),
-      UsedHours: Number(f.UsedHours ?? 0),
-      AccruedHours: Number(f.AccruedHours ?? 0),
-      CarryOverHours: Number(f.CarryOverHours ?? 0),
-      AsOfDate: (f.AsOfDate as string) ?? '',
-    } satisfies PtoBalance;
-  });
+  try {
+    const res = await spFetch(SP_LISTS.balances, '/items?$expand=fields&$orderby=fields/EmployeeName asc');
+    if (!res.ok) return DEMO_BALANCES;
+    const json = await res.json();
+    return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
+      const f = item.fields;
+      return {
+        id: item.id,
+        EmployeeName: (f.EmployeeName as string) ?? '',
+        EmployeeId: (f.EmployeeId as string) ?? '',
+        SupervisorName: f.SupervisorName as string | undefined,
+        AvailableHours: Number(f.AvailableHours ?? 0),
+        UsedHours: Number(f.UsedHours ?? 0),
+        AccruedHours: Number(f.AccruedHours ?? 0),
+        CarryOverHours: Number(f.CarryOverHours ?? 0),
+        AsOfDate: (f.AsOfDate as string) ?? '',
+      } satisfies PtoBalance;
+    });
+  } catch {
+    return DEMO_BALANCES;
+  }
 }
 
 export async function listPtoRequests(): Promise<PtoRequest[]> {
-  const res = await spFetch(
-    SP_LISTS.requests,
-    '/items?$expand=fields&$orderby=fields/Created desc',
-  );
-  if (isAccessDenied(res.status)) return DEMO_REQUESTS;
-  if (!res.ok) throw new Error(`Failed to fetch PTO requests: ${res.status}`);
-  const json = await res.json();
-  return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
-    const f = item.fields;
-    return {
-      id: item.id,
-      EmployeeName: f.EmployeeName as string | undefined,
-      EmployeeId: f.EmployeeId as string | undefined,
-      StartDate: (f.StartDate as string) ?? '',
-      EndDate: (f.EndDate as string) ?? '',
-      Type: (f.Type as string) ?? '',
-      Notes: f.Notes as string | undefined,
-      Status: ((f.Status as string) ?? 'Pending') as 'Pending' | 'Approved' | 'Denied',
-      SubmittedOn: f.Created as string | undefined,
-    } satisfies PtoRequest;
-  });
+  try {
+    const res = await spFetch(SP_LISTS.requests, '/items?$expand=fields&$orderby=fields/Created desc');
+    if (!res.ok) return DEMO_REQUESTS;
+    const json = await res.json();
+    return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
+      const f = item.fields;
+      return {
+        id: item.id,
+        EmployeeName: f.EmployeeName as string | undefined,
+        EmployeeId: f.EmployeeId as string | undefined,
+        StartDate: (f.StartDate as string) ?? '',
+        EndDate: (f.EndDate as string) ?? '',
+        Type: (f.Type as string) ?? '',
+        Notes: f.Notes as string | undefined,
+        Status: ((f.Status as string) ?? 'Pending') as 'Pending' | 'Approved' | 'Denied',
+        SubmittedOn: f.Created as string | undefined,
+      } satisfies PtoRequest;
+    });
+  } catch {
+    return DEMO_REQUESTS;
+  }
 }
 
 export async function createPtoRequest(req: NewPtoRequest): Promise<PtoRequest> {
@@ -170,20 +166,20 @@ export async function createPtoRequest(req: NewPtoRequest): Promise<PtoRequest> 
 }
 
 export async function listSupervisors(): Promise<PtoSupervisor[]> {
-  const res = await spFetch(
-    SP_LISTS.supervisors,
-    '/items?$expand=fields&$orderby=fields/SupervisorName asc',
-  );
-  if (isAccessDenied(res.status)) return DEMO_SUPERVISORS;
-  if (!res.ok) throw new Error(`Failed to fetch supervisors: ${res.status}`);
-  const json = await res.json();
-  return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
-    const f = item.fields;
-    return {
-      id: item.id,
-      SupervisorName: (f.SupervisorName as string) ?? '',
-      SupervisorEmail: (f.SupervisorEmail as string) ?? '',
-      Department: f.Department as string | undefined,
-    } satisfies PtoSupervisor;
-  });
+  try {
+    const res = await spFetch(SP_LISTS.supervisors, '/items?$expand=fields&$orderby=fields/SupervisorName asc');
+    if (!res.ok) return DEMO_SUPERVISORS;
+    const json = await res.json();
+    return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
+      const f = item.fields;
+      return {
+        id: item.id,
+        SupervisorName: (f.SupervisorName as string) ?? '',
+        SupervisorEmail: (f.SupervisorEmail as string) ?? '',
+        Department: f.Department as string | undefined,
+      } satisfies PtoSupervisor;
+    });
+  } catch {
+    return DEMO_SUPERVISORS;
+  }
 }
