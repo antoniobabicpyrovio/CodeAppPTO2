@@ -52,7 +52,6 @@ export function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const effectiveAdminRole = useEffectiveAdminRole();
-
   const [envLabel] = useState<string | null>(null);
 
   const visibleSections = NAV_SECTIONS

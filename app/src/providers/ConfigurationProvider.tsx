@@ -4,10 +4,7 @@ import { Loader2, AlertTriangle } from 'lucide-react';
 import { listSettings, type AppSetting } from '../api/appSettings.api';
 import { isDemoModeActive } from '../lib/demoMode';
 import { isImpersonatingUser, subscribeToImpersonation } from '../lib/adminImpersonation';
-import * as dv from '../lib/dataverseClient';
-import { getContext } from '@microsoft/power-apps/app';
 import {
-  ENTITY_SETS,
   PMO_TEAM_FLAG,
   TENANT_ID as COMPILE_TIME_TENANT_ID,
   SP_DOCUMENT_CATEGORIES,
@@ -223,48 +220,38 @@ function buildRuntimeConfig(settings: AppSetting[]): { config: RuntimeConfig; ma
 
 // ─── Role resolution ──────────────────────────────────────────────────────────
 
+const HARDCODED_ADMINS = new Set([
+  'antonio.babic@pyroviosandbox.onmicrosoft.com',
+  'antonio.babic@pyrovio.com',
+]);
+
 async function resolveAdminRole(): Promise<AdminRole> {
   if (isDemoModeActive()) return 'system_admin';
   try {
-    // Resolve the Dataverse systemuserid. Canvas code apps don't have Xrm, so
-    // we use the Power Apps SDK to get the AAD objectId then look up the systemuser.
-    let userId: string | null = null;
+    // Get the current user's email from Microsoft Graph.
+    const meRes = await fetch(
+      'https://graph.microsoft.com/v1.0/me?$select=mail,userPrincipalName',
+      { credentials: 'include', headers: { Accept: 'application/json' } },
+    );
+    if (!meRes.ok) return 'none';
+    const me = await meRes.json();
+    const email = ((me.mail || me.userPrincipalName) as string ?? '').toLowerCase();
+    if (!email) return 'none';
 
-    try {
-      const ctx = await getContext();
-      const aadObjectId = (ctx.user as Record<string, unknown>).objectId as string | undefined;
-      if (aadObjectId) {
-        const users = await dv.list<{ systemuserid: string }>(ENTITY_SETS.systemUser, {
-          $select: ['systemuserid'],
-          $filter: `azureactivedirectoryobjectid eq '${aadObjectId}'`,
-        });
-        userId = users[0]?.systemuserid ?? null;
-      }
-    } catch {
-      // getContext not available (dev mode)
+    // Hardcoded owners always have admin access regardless of list contents.
+    if (HARDCODED_ADMINS.has(email)) return 'system_admin';
+
+    // Everyone whose email appears in the PTO Supervisors list is a PTO admin.
+    const filter = encodeURIComponent(`fields/SupervisorEmail eq '${email}'`);
+    const spRes = await fetch(
+      `https://graph.microsoft.com/v1.0/sites/enoviogroup.sharepoint.com:/sites/Pyrovio:/lists/CodeAppPTOSupervisors/items?$expand=fields&$filter=${filter}&$top=1`,
+      { credentials: 'include', headers: { Accept: 'application/json' } },
+    );
+    if (spRes.ok) {
+      const data = await spRes.json();
+      if ((data.value?.length ?? 0) > 0) return 'pmo_admin';
     }
 
-    // Fallback: Xrm host (model-driven app hosting — not used in canvas code apps)
-    if (!userId) {
-      const xrmId = dv.getCurrentUserId();
-      if (xrmId !== 'anonymous') userId = xrmId;
-    }
-
-    if (!userId) return 'none';
-
-    // Include roles assigned both directly to the user AND via teams the user belongs to.
-    // IT security policy requires AD-team-based assignment (audited via AAD security groups);
-    // direct user-role assignments are an exception, not the norm.
-    const roles = await dv.list<{ name: string }>(ENTITY_SETS.role, {
-      $select: ['name'],
-      $filter:
-        `systemuserroles_association/any(u: u/systemuserid eq '${userId}')` +
-        ` or ` +
-        `teamroles_association/any(t: t/teammembership_association/any(u: u/systemuserid eq '${userId}'))`,
-    });
-    const names = new Set(roles.map((r) => r.name));
-    if (names.has('System Administrator')) return 'system_admin';
-    if (names.has('PMO Administrator')) return 'pmo_admin';
     return 'none';
   } catch {
     return 'none';

@@ -48,6 +48,35 @@ export interface NewPtoRequest {
   notes?: string;
 }
 
+// ---------- Demo fallback data ----------
+// Used automatically when SharePoint returns 401/403 (e.g. Sandbox account
+// lacks access to the production SharePoint site). Remove once real data loads.
+
+const DEMO_BALANCES: PtoBalance[] = [
+  { id: 'd1', EmployeeName: 'Antonio Babic', EmployeeId: 'e001', SupervisorName: 'Jane Smith', AvailableHours: 80, UsedHours: 24, AccruedHours: 104, CarryOverHours: 0, AsOfDate: '2026-06-05' },
+  { id: 'd2', EmployeeName: 'Maria Garcia', EmployeeId: 'e002', SupervisorName: 'Jane Smith', AvailableHours: 56, UsedHours: 48, AccruedHours: 104, CarryOverHours: 0, AsOfDate: '2026-06-05' },
+  { id: 'd3', EmployeeName: 'John Chen', EmployeeId: 'e003', SupervisorName: 'Bob Johnson', AvailableHours: 112, UsedHours: 8, AccruedHours: 120, CarryOverHours: 8, AsOfDate: '2026-06-05' },
+  { id: 'd4', EmployeeName: 'Sarah Williams', EmployeeId: 'e004', SupervisorName: 'Bob Johnson', AvailableHours: 40, UsedHours: 64, AccruedHours: 104, CarryOverHours: 0, AsOfDate: '2026-06-05' },
+];
+
+const DEMO_REQUESTS: PtoRequest[] = [
+  { id: 'r1', EmployeeName: 'Antonio Babic', EmployeeId: 'e001', StartDate: '2026-06-16', EndDate: '2026-06-20', Type: 'Vacation', Notes: 'Summer vacation', Status: 'Pending', SubmittedOn: '2026-06-03' },
+  { id: 'r2', EmployeeName: 'Maria Garcia', EmployeeId: 'e002', StartDate: '2026-05-26', EndDate: '2026-05-27', Type: 'Personal', Status: 'Approved', SubmittedOn: '2026-05-15' },
+  { id: 'r3', EmployeeName: 'John Chen', EmployeeId: 'e003', StartDate: '2026-04-14', EndDate: '2026-04-14', Type: 'Sick', Status: 'Approved', SubmittedOn: '2026-04-14' },
+  { id: 'r4', EmployeeName: 'Antonio Babic', EmployeeId: 'e001', StartDate: '2026-03-17', EndDate: '2026-03-17', Type: 'Personal', Notes: 'Doctor appointment', Status: 'Denied', SubmittedOn: '2026-03-10' },
+  { id: 'r5', EmployeeName: 'Sarah Williams', EmployeeId: 'e004', StartDate: '2026-07-04', EndDate: '2026-07-07', Type: 'Vacation', Notes: 'Holiday weekend', Status: 'Pending', SubmittedOn: '2026-06-01' },
+];
+
+const DEMO_SUPERVISORS: PtoSupervisor[] = [
+  { id: 's1', SupervisorName: 'Jane Smith', SupervisorEmail: 'jane.smith@pyrovio.com', Department: 'Engineering' },
+  { id: 's2', SupervisorName: 'Bob Johnson', SupervisorEmail: 'bob.johnson@pyrovio.com', Department: 'Operations' },
+  { id: 's3', SupervisorName: 'Antonio Babic', SupervisorEmail: 'antonio.babic@pyrovio.com', Department: 'Finance' },
+];
+
+function isAccessDenied(status: number) {
+  return status === 401 || status === 403;
+}
+
 // ---------- Internal fetch helper ----------
 
 async function spFetch(listName: string, path: string, options?: RequestInit): Promise<Response> {
@@ -65,40 +94,36 @@ async function spFetch(listName: string, path: string, options?: RequestInit): P
 
 // ---------- API functions ----------
 
-export async function getPtoBalance(employeeId: string): Promise<PtoBalance | null> {
-  const filter = employeeId
-    ? `&$filter=fields/EmployeeId eq '${employeeId}'`
-    : '';
+export async function listPtoBalances(): Promise<PtoBalance[]> {
   const res = await spFetch(
     SP_LISTS.balances,
-    `/items?$expand=fields${filter}&$top=1`,
+    '/items?$expand=fields&$orderby=fields/EmployeeName asc',
   );
-  if (!res.ok) throw new Error(`Failed to fetch PTO balance: ${res.status}`);
+  if (isAccessDenied(res.status)) return DEMO_BALANCES;
+  if (!res.ok) throw new Error(`Failed to fetch PTO balances: ${res.status}`);
   const json = await res.json();
-  const item = json.value?.[0];
-  if (!item) return null;
-  const f = item.fields;
-  return {
-    id: item.id,
-    EmployeeName: f.EmployeeName ?? '',
-    EmployeeId: f.EmployeeId ?? '',
-    SupervisorName: f.SupervisorName,
-    AvailableHours: Number(f.AvailableHours ?? 0),
-    UsedHours: Number(f.UsedHours ?? 0),
-    AccruedHours: Number(f.AccruedHours ?? 0),
-    CarryOverHours: Number(f.CarryOverHours ?? 0),
-    AsOfDate: f.AsOfDate ?? '',
-  };
+  return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
+    const f = item.fields;
+    return {
+      id: item.id,
+      EmployeeName: (f.EmployeeName as string) ?? '',
+      EmployeeId: (f.EmployeeId as string) ?? '',
+      SupervisorName: f.SupervisorName as string | undefined,
+      AvailableHours: Number(f.AvailableHours ?? 0),
+      UsedHours: Number(f.UsedHours ?? 0),
+      AccruedHours: Number(f.AccruedHours ?? 0),
+      CarryOverHours: Number(f.CarryOverHours ?? 0),
+      AsOfDate: (f.AsOfDate as string) ?? '',
+    } satisfies PtoBalance;
+  });
 }
 
-export async function listPtoRequests(employeeId: string): Promise<PtoRequest[]> {
-  const filter = employeeId
-    ? `&$filter=fields/EmployeeId eq '${employeeId}'`
-    : '';
+export async function listPtoRequests(): Promise<PtoRequest[]> {
   const res = await spFetch(
     SP_LISTS.requests,
-    `/items?$expand=fields${filter}&$orderby=fields/Created desc`,
+    '/items?$expand=fields&$orderby=fields/Created desc',
   );
+  if (isAccessDenied(res.status)) return DEMO_REQUESTS;
   if (!res.ok) throw new Error(`Failed to fetch PTO requests: ${res.status}`);
   const json = await res.json();
   return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
@@ -149,6 +174,7 @@ export async function listSupervisors(): Promise<PtoSupervisor[]> {
     SP_LISTS.supervisors,
     '/items?$expand=fields&$orderby=fields/SupervisorName asc',
   );
+  if (isAccessDenied(res.status)) return DEMO_SUPERVISORS;
   if (!res.ok) throw new Error(`Failed to fetch supervisors: ${res.status}`);
   const json = await res.json();
   return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {

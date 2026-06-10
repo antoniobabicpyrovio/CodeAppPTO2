@@ -166,13 +166,28 @@ pac auth select --index N   # N = index from pac auth list
 
 ## Typical iteration loop
 
+**Always commit before deploying.** This is the required order:
+
 ```powershell
 cd "<OneDrive - Pyrovio>\Documents\antonio-pto-solution\app"
-# edit src/ ...
+
+# 1. Edit src/ ...
+
+# 2. Build
 npm run build
+
+# 3. Commit to GitHub FIRST
+git add <changed files>
+git commit -m "description of changes"
+git push origin main
+
+# 4. Deploy
 pac code push
-# open play URL to test
+
+# 5. Open play URL to test
 ```
+
+Never run `pac code push` before committing. The deployed build must always match what is in the GitHub repo.
 
 ---
 
