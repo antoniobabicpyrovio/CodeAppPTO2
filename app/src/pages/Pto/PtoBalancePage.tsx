@@ -1,4 +1,4 @@
-import { Wallet, TrendingDown, CheckCircle } from 'lucide-react';
+import { TrendingDown, CheckCircle, Wallet } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { usePtoBalance } from '../../hooks/usePtoBalance';
 
@@ -10,7 +10,6 @@ export function PtoBalancePage() {
       <PageHeader
         title="PTO Balance"
         subtitle="View your available and used time-off balances"
-        icon={<Wallet className="h-5 w-5" />}
       />
 
       {isLoading ? (
@@ -19,7 +18,6 @@ export function PtoBalancePage() {
         <div className="flex items-center justify-center py-12 text-sm text-rose-500">Failed to load balance.</div>
       ) : !balance ? (
         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
-          <Wallet className="h-8 w-8 opacity-30" />
           <p className="text-sm">No balance information found.</p>
         </div>
       ) : (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CalendarDays, Plus, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/ui/button';
 import { usePtoRequests, useCreatePtoRequest } from '../../hooks/usePtoRequests';
@@ -52,7 +52,6 @@ export function PtoRequestPage() {
       <PageHeader
         title="PTO Request"
         subtitle="Submit and track your time-off requests"
-        icon={<CalendarDays className="h-5 w-5" />}
         actions={
           <Button onClick={() => setShowForm((v) => !v)} size="sm">
             <Plus className="h-4 w-4 mr-1.5" />
@@ -132,7 +131,6 @@ export function PtoRequestPage() {
           <div className="flex items-center justify-center py-12 text-sm text-rose-500">Failed to load requests.</div>
         ) : requests.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-2">
-            <CalendarDays className="h-8 w-8 opacity-30" />
             <p className="text-sm">No PTO requests yet.</p>
           </div>
         ) : (

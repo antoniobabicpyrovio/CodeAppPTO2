@@ -18,20 +18,11 @@ const PtoBalancePage = lazy(() =>
 );
 
 // --- Administration ---
-const TeamsPage = lazy(() =>
-  import('./pages/Teams/TeamsPage').then((m) => ({ default: m.TeamsPage }))
+const PtoSupervisorsPage = lazy(() =>
+  import('./pages/Admin/PtoSupervisorsPage').then((m) => ({ default: m.PtoSupervisorsPage }))
 );
 const AdminSettingsPage = lazy(() =>
   import('./pages/Admin/AdminSettingsPage').then((m) => ({ default: m.AdminSettingsPage }))
-);
-const ChangeHistoryPage = lazy(() =>
-  import('./pages/Admin/ChangeHistoryPage').then((m) => ({ default: m.ChangeHistoryPage }))
-);
-const UserFeedbackPage = lazy(() =>
-  import('./pages/Admin/UserFeedbackPage').then((m) => ({ default: m.UserFeedbackPage }))
-);
-const UserFeedbackDetailPage = lazy(() =>
-  import('./pages/Admin/UserFeedbackDetailPage').then((m) => ({ default: m.UserFeedbackDetailPage }))
 );
 
 const queryClient = new QueryClient({
@@ -92,11 +83,8 @@ function App() {
                       <Route path="pto-balance" element={<PtoBalancePage />} />
 
                       {/* Administration */}
-                      <Route path="teams" element={<TeamsPage />} />
+                      <Route path="admin/pto-supervisors" element={<AdminRoute><PtoSupervisorsPage /></AdminRoute>} />
                       <Route path="admin/settings" element={<AdminRoute><AdminSettingsPage /></AdminRoute>} />
-                      <Route path="admin/change-history" element={<AdminRoute><ChangeHistoryPage /></AdminRoute>} />
-                      <Route path="admin/user-feedback" element={<AdminRoute><UserFeedbackPage /></AdminRoute>} />
-                      <Route path="admin/user-feedback/:id" element={<AdminRoute><UserFeedbackDetailPage /></AdminRoute>} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Route>
                   </Routes>

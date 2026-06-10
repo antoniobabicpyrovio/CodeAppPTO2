@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSidebarState } from './AppShell';
@@ -9,8 +9,6 @@ import {
   ChevronRight,
   ChevronDown,
   Settings,
-  History,
-  MessageSquareText,
   Users,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -43,10 +41,8 @@ const NAV_SECTIONS: NavSection[] = [
     id: 'admin',
     header: 'Administration',
     items: [
-      { path: '/teams', label: 'Teams', icon: Users },
+      { path: '/admin/pto-supervisors', label: 'PTO Supervisors', icon: Users },
       { path: '/admin/settings', label: 'Settings', icon: Settings },
-      { path: '/admin/change-history', label: 'Change History', icon: History },
-      { path: '/admin/user-feedback', label: 'User Feedback', icon: MessageSquareText },
     ],
   },
 ];
@@ -57,10 +53,7 @@ export function Sidebar() {
   const { pathname } = useLocation();
   const effectiveAdminRole = useEffectiveAdminRole();
 
-  const [envLabel, setEnvLabel] = useState<string | null>(null);
-  useEffect(() => {
-    // Environment label detection can be wired up once environment IDs are known
-  }, []);
+  const [envLabel] = useState<string | null>(null);
 
   const visibleSections = NAV_SECTIONS
     .filter((s) => s.id !== 'admin' || effectiveAdminRole !== 'none');

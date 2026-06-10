@@ -1,19 +1,5 @@
-/**
- * SharePoint list client for the three PTO lists on the Pyrovio site.
- *
- * Lists:
- *   CodeAppPTOBalances   – employee balance records
- *   CodeAppPTORequests   – PTO request submissions
- *   CodeAppPTOSupervisors – supervisor lookup
- *
- * Authentication goes through the Power Apps Code App host context: all fetch
- * calls pass through Dataverse as a proxy via instant Power Automate flows
- * registered as connection references (similar to the document-upload proxy
- * pattern used in the original CFR solution).
- *
- * Once Power Automate flows are wired in the Pyrovio Sandbox environment,
- * replace the stub implementations below with real dv.executeAction calls.
- */
+const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
+const SP_SITE_PATH = 'enoviogroup.sharepoint.com:/sites/Pyrovio:';
 
 export const SP_SITE = 'https://enoviogroup.sharepoint.com/sites/Pyrovio';
 export const SP_LISTS = {
@@ -62,31 +48,116 @@ export interface NewPtoRequest {
   notes?: string;
 }
 
-// ---------- API functions ----------
-// These call Dataverse custom APIs / Power Automate flows that proxy to SharePoint.
-// TODO: replace stubs with real executeAction calls once flows are deployed.
+// ---------- Internal fetch helper ----------
 
-export async function getPtoBalance(_employeeId: string): Promise<PtoBalance | null> {
-  // Placeholder — will call a Dataverse custom API backed by a Power Automate flow
-  // that reads the current user's row from CodeAppPTOBalances.
-  return null;
+async function spFetch(listName: string, path: string, options?: RequestInit): Promise<Response> {
+  const url = `${GRAPH_BASE}/sites/${SP_SITE_PATH}/lists/${encodeURIComponent(listName)}${path}`;
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...options?.headers,
+    },
+    credentials: 'include',
+  });
 }
 
-export async function listPtoRequests(_employeeId: string): Promise<PtoRequest[]> {
-  // Placeholder — will call a Dataverse custom API backed by a Power Automate flow
-  // that queries CodeAppPTORequests filtered to the current user.
-  return [];
+// ---------- API functions ----------
+
+export async function getPtoBalance(employeeId: string): Promise<PtoBalance | null> {
+  const filter = employeeId
+    ? `&$filter=fields/EmployeeId eq '${employeeId}'`
+    : '';
+  const res = await spFetch(
+    SP_LISTS.balances,
+    `/items?$expand=fields${filter}&$top=1`,
+  );
+  if (!res.ok) throw new Error(`Failed to fetch PTO balance: ${res.status}`);
+  const json = await res.json();
+  const item = json.value?.[0];
+  if (!item) return null;
+  const f = item.fields;
+  return {
+    id: item.id,
+    EmployeeName: f.EmployeeName ?? '',
+    EmployeeId: f.EmployeeId ?? '',
+    SupervisorName: f.SupervisorName,
+    AvailableHours: Number(f.AvailableHours ?? 0),
+    UsedHours: Number(f.UsedHours ?? 0),
+    AccruedHours: Number(f.AccruedHours ?? 0),
+    CarryOverHours: Number(f.CarryOverHours ?? 0),
+    AsOfDate: f.AsOfDate ?? '',
+  };
+}
+
+export async function listPtoRequests(employeeId: string): Promise<PtoRequest[]> {
+  const filter = employeeId
+    ? `&$filter=fields/EmployeeId eq '${employeeId}'`
+    : '';
+  const res = await spFetch(
+    SP_LISTS.requests,
+    `/items?$expand=fields${filter}&$orderby=fields/Created desc`,
+  );
+  if (!res.ok) throw new Error(`Failed to fetch PTO requests: ${res.status}`);
+  const json = await res.json();
+  return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
+    const f = item.fields;
+    return {
+      id: item.id,
+      EmployeeName: f.EmployeeName as string | undefined,
+      EmployeeId: f.EmployeeId as string | undefined,
+      StartDate: (f.StartDate as string) ?? '',
+      EndDate: (f.EndDate as string) ?? '',
+      Type: (f.Type as string) ?? '',
+      Notes: f.Notes as string | undefined,
+      Status: ((f.Status as string) ?? 'Pending') as 'Pending' | 'Approved' | 'Denied',
+      SubmittedOn: f.Created as string | undefined,
+    } satisfies PtoRequest;
+  });
 }
 
 export async function createPtoRequest(req: NewPtoRequest): Promise<PtoRequest> {
-  // Placeholder — will call a Dataverse custom API backed by a Power Automate flow
-  // that creates an item in CodeAppPTORequests.
-  void req;
-  throw new Error('createPtoRequest: Power Automate flow not yet connected. Deploy to Pyrovio Sandbox first.');
+  const res = await spFetch(SP_LISTS.requests, '/items', {
+    method: 'POST',
+    body: JSON.stringify({
+      fields: {
+        StartDate: req.startDate,
+        EndDate: req.endDate,
+        Type: req.type,
+        Notes: req.notes ?? '',
+        Status: 'Pending',
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`Failed to create PTO request: ${res.status}`);
+  const item = await res.json();
+  const f = item.fields ?? {};
+  return {
+    id: item.id,
+    StartDate: (f.StartDate as string) ?? req.startDate,
+    EndDate: (f.EndDate as string) ?? req.endDate,
+    Type: (f.Type as string) ?? req.type,
+    Notes: f.Notes as string | undefined,
+    Status: 'Pending',
+    SubmittedOn: f.Created as string | undefined,
+  };
 }
 
 export async function listSupervisors(): Promise<PtoSupervisor[]> {
-  // Placeholder — will call a Dataverse custom API backed by a Power Automate flow
-  // that reads CodeAppPTOSupervisors.
-  return [];
+  const res = await spFetch(
+    SP_LISTS.supervisors,
+    '/items?$expand=fields&$orderby=fields/SupervisorName asc',
+  );
+  if (!res.ok) throw new Error(`Failed to fetch supervisors: ${res.status}`);
+  const json = await res.json();
+  return (json.value ?? []).map((item: { id: string; fields: Record<string, unknown> }) => {
+    const f = item.fields;
+    return {
+      id: item.id,
+      SupervisorName: (f.SupervisorName as string) ?? '',
+      SupervisorEmail: (f.SupervisorEmail as string) ?? '',
+      Department: f.Department as string | undefined,
+    } satisfies PtoSupervisor;
+  });
 }

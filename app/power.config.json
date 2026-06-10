@@ -1,9 +1,9 @@
 {
   "version": "1.0",
-  "appId": "",
+  "appId": "f5c17ed7-2e10-475c-9234-e4910d6af4be",
   "appDisplayName": "PTO Manager",
-  "region": "unitedstates",
-  "environmentId": "",
+  "region": "prod",
+  "environmentId": "Default-1b4e0c69-9f47-4349-b384-3445e56fa363",
   "description": "Pyrovio PTO management application — submit and track time-off requests.",
   "buildPath": "./dist",
   "buildEntryPoint": "index.html",
