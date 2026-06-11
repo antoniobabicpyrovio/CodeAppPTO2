@@ -13,13 +13,14 @@ import {
   UserRound,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { useAdminRole, useEffectiveAdminRole } from '../../providers/ConfigurationProvider';
+import { useAdminRole, useEffectiveAdminRole, useFeatureToggles } from '../../providers/ConfigurationProvider';
 import { isImpersonatingUser, setImpersonatingUser, subscribeToImpersonation } from '../../lib/adminImpersonation';
 
 interface NavItem {
   path: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
+  toggleKey?: string;
 }
 
 interface NavSection {
@@ -35,8 +36,8 @@ const NAV_SECTIONS: NavSection[] = [
     header: 'PTO',
     defaultOpen: true,
     items: [
-      { path: '/pto-request', label: 'PTO Request', icon: CalendarDays },
-      { path: '/pto-balance', label: 'PTO Balance', icon: Wallet },
+      { path: '/pto-request', label: 'PTO Request', icon: CalendarDays, toggleKey: 'nav.ptoRequest' },
+      { path: '/pto-balance', label: 'PTO Balance', icon: Wallet, toggleKey: 'nav.ptoBalance' },
     ],
   },
   {
@@ -56,11 +57,17 @@ export function Sidebar() {
   const realAdminRole = useAdminRole();
   const effectiveAdminRole = useEffectiveAdminRole();
   const impersonating = useSyncExternalStore(subscribeToImpersonation, isImpersonatingUser);
+  const featureToggles = useFeatureToggles();
   const isAdmin = realAdminRole !== 'none';
   const [envLabel] = useState<string | null>(null);
 
   const visibleSections = NAV_SECTIONS
-    .filter((s) => s.id !== 'admin' || effectiveAdminRole !== 'none');
+    .filter((s) => s.id !== 'admin' || effectiveAdminRole !== 'none')
+    .map((s) => ({
+      ...s,
+      items: s.items.filter((item) => !item.toggleKey || featureToggles[item.toggleKey] !== false),
+    }))
+    .filter((s) => s.items.length > 0);
 
   const [openSections, setOpenSections] = useState<Set<string>>(() => {
     const initial = new Set<string>();

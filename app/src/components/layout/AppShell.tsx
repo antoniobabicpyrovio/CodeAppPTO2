@@ -2,12 +2,11 @@ import { SubmitProgressBar } from '../common/SubmitProgressBar';
 import { useState, createContext, useContext, useSyncExternalStore } from 'react';
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Keyboard, Sparkles, FlaskConical } from 'lucide-react';
+import { Keyboard, FlaskConical } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { Button } from '../ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '../ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../ui/sheet';
 import { ThemeToggle } from '../../lib/theme';
-import { MiraPanel } from '../mira/MiraPanel';
 import { NotificationCenter } from './NotificationCenter';
 import { useFeatureToggles } from '../../providers/ConfigurationProvider';
 import { isDemoModeActive, subscribeToDemoMode } from '../../lib/demoMode';
@@ -35,7 +34,6 @@ function getGreeting(): string {
 
 export function AppShell() {
   const [collapsed, setCollapsed] = useState(false);
-  const [miraOpen, setMiraOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const featureToggles = useFeatureToggles();
   const demoMode = useSyncExternalStore(subscribeToDemoMode, isDemoModeActive);
@@ -56,7 +54,7 @@ export function AppShell() {
                 <p className="text-sm font-semibold text-foreground leading-none">
                   {getGreeting()}
                 </p>
-                <p className="text-xs text-muted-foreground mt-0.5">CFR Project Management</p>
+                <p className="text-xs text-muted-foreground mt-0.5">PTO Manager</p>
               </div>
               {/* Stage 6: live submit-progress indicator. Renders only while a
                   task-submit batch is in flight, so the user knows what's saving
@@ -85,20 +83,6 @@ export function AppShell() {
                 </>
               )}
               <NotificationCenter />
-              {featureToggles['header.askMira'] && (
-                <>
-                  <div className="w-px h-5 bg-border mx-0.5" />
-                  <Button
-                    variant="brand"
-                    size="sm"
-                    className="h-8 text-xs"
-                    onClick={() => setMiraOpen(true)}
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Ask Mira
-                  </Button>
-                </>
-              )}
             </div>
           </header>
 
@@ -115,24 +99,6 @@ export function AppShell() {
             <Outlet />
           </main>
         </motion.div>
-
-        {/* Mira side panel */}
-        <Sheet open={miraOpen} onOpenChange={setMiraOpen}>
-          <SheetContent className="bg-card border-border w-[400px] sm:max-w-[400px]">
-            <SheetHeader>
-              <SheetTitle className="text-foreground flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/15 text-primary">
-                  <Sparkles className="h-3.5 w-3.5" />
-                </div>
-                Ask Mira
-              </SheetTitle>
-              <SheetDescription className="text-muted-foreground">
-                Your AI-powered PMO assistant
-              </SheetDescription>
-            </SheetHeader>
-            <MiraPanel />
-          </SheetContent>
-        </Sheet>
 
         {/* Keyboard Shortcuts */}
         <Sheet open={shortcutsOpen} onOpenChange={setShortcutsOpen}>

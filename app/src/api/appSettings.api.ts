@@ -1,6 +1,3 @@
-import * as dv from '../lib/dataverseClient';
-import { ENTITY_SETS } from '../lib/constants';
-
 export interface AppSetting {
   pmo_appsettingid: string;
   pmo_key: string;
@@ -8,37 +5,11 @@ export interface AppSetting {
   pmo_description: string | null;
 }
 
-const SET = ENTITY_SETS.appSetting;
-const TIMEOUT_MS = 8000;
-
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error(`Settings query timed out after ${ms}ms — the pmo_appsettings table may not yet be available in this session. Reload the page and try again.`)), ms),
-    ),
-  ]);
-}
-
 export async function listSettings(): Promise<AppSetting[]> {
-  return withTimeout(
-    dv.list<AppSetting>(SET, {
-      $select: ['pmo_appsettingid', 'pmo_key', 'pmo_value', 'pmo_description'],
-      $filter: 'statecode eq 0',
-      $orderby: 'pmo_key asc',
-    }),
-    TIMEOUT_MS,
-  );
+  return [];
 }
 
-export async function upsertSetting(
-  key: string,
-  value: string,
-  existing?: AppSetting,
-): Promise<void> {
-  if (existing) {
-    await dv.update(SET, existing.pmo_appsettingid, { pmo_value: value });
-  } else {
-    await dv.create(SET, { pmo_key: key, pmo_value: value });
-  }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function upsertSetting(_key: string, _value: string, _existing?: AppSetting): Promise<void> {
+  // Dataverse not available in this environment — settings are stored in localStorage
 }

@@ -135,49 +135,34 @@ export const DEFAULT_MIRA_SIGNAL_THRESHOLDS: MiraSignalThresholds = {
 };
 
 export const DEFAULT_FEATURE_TOGGLES: FeatureToggles = {
-  'nav.dashboard': true,
-  'nav.intakeQueue': true,
-  'nav.projects': true,
-  'nav.programs': true,
-  'nav.statusReports': true,
-  'nav.analyticsOverview': true,
-  'nav.analyticsByTeam': true,
-  'nav.analyticsPipeline': true,
-  'nav.analyticsHealth': true,
-  'nav.analyticsSchedule': true,
-  'nav.analyticsGovernance': true,
-  'nav.analyticsCapacity': true,
-  'nav.analyticsPrioritization': true,
-  'nav.analyticsFinancials': true,
-  'nav.analyticsScenarios': true,
-  'nav.analyticsVariance': true,
-  'nav.analyticsRoadmap': true,
-  'nav.analyticsIntakePipeline': true,
-  'nav.analyticsRoutingQa': true,
+  'nav.ptoRequest': true,
+  'nav.ptoBalance': true,
   'header.themeToggle': true,
   'header.shortcuts': true,
-  'header.askMira': true,
-  // Intake screen request cards (matched by workflow name; feedback by route)
-  'intakeCard.programIntake5Stage': true,    // "Standard Program Intake (5-Stage)"
-  'intakeCard.programRequest': true,          // "Standard Program Request"
-  'intakeCard.projectIntake5Stage': true,    // "Standard Project Intake (5-Stage)"
-  'intakeCard.projectRequest': true,          // "Standard Project Request"
-  'intakeCard.feedbackBug': true,             // Report a Bug
-  'intakeCard.feedbackEnhancement': true,     // Suggest an Enhancement
-  // Intake flow behavior
-  // When true, intake submission auto-approves AND converts the request to a
-  // project/program in one shot (provided validateConversionReadiness passes).
-  // When false (default), submission goes through the normal approval queue.
-  'intake.bypassApproval': false,
-  // Project detail page tabs
-  'projectTab.overview': true,
-  'projectTab.plan': true,
-  'projectTab.tasks': true,
-  'projectTab.monitor': true,
-  'projectTab.govern': true,
-  'projectTab.collaborate': true,
-  'projectTab.status': true,
 };
+
+const TOGGLE_STORAGE_KEY = 'pto_feature_toggles';
+const toggleSubscribers = new Set<() => void>();
+
+function getStoredToggles(): FeatureToggles {
+  try {
+    const raw = localStorage.getItem(TOGGLE_STORAGE_KEY);
+    if (!raw) return DEFAULT_FEATURE_TOGGLES;
+    return { ...DEFAULT_FEATURE_TOGGLES, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_FEATURE_TOGGLES;
+  }
+}
+
+function subscribeToLocalToggles(fn: () => void): () => void {
+  toggleSubscribers.add(fn);
+  return () => { toggleSubscribers.delete(fn); };
+}
+
+export function saveFeatureToggles(toggles: FeatureToggles): void {
+  localStorage.setItem(TOGGLE_STORAGE_KEY, JSON.stringify(toggles));
+  toggleSubscribers.forEach((fn) => fn());
+}
 
 // ─── Parsing ──────────────────────────────────────────────────────────────────
 
@@ -401,7 +386,7 @@ export function useMiraSignalThresholds(): MiraSignalThresholds {
 }
 
 export function useFeatureToggles(): FeatureToggles {
-  return useContext(ConfigurationContext).config.featureToggles;
+  return useSyncExternalStore(subscribeToLocalToggles, getStoredToggles);
 }
 
 export function useFeatureToggle(key: string): boolean {

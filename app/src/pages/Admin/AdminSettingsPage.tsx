@@ -14,7 +14,7 @@ import {
   SETTING_FALLBACK_TRIAGE_TEAM, SETTING_USER_SCOPE_GROUP, SETTING_DEFAULT_PROJECT_TEMPLATE, ARTIFACT_TYPE,
   SETTING_DASHBOARD_DISPLAY_CONFIG, SETTING_INTAKE_TRIAGE_SIMILARITY_CONFIG,
   SETTING_NOTIFICATION_DISPLAY_CONFIG, SETTING_SP_DOCUMENT_CATEGORIES,
-  SETTING_PMO_TEAM_FIELD, SETTING_TENANT_ID, SETTING_INTAKE_ROUTING_CONFIG,
+  SETTING_TENANT_ID, SETTING_INTAKE_ROUTING_CONFIG,
   SETTING_PRIORITIZATION_WEIGHTS, SETTING_PRIORITIZATION_BUDGET_TIERS, SETTING_MIRA_SIGNAL_THRESHOLDS,
   SP_DOCUMENT_CATEGORIES,
 } from '../../lib/constants';
@@ -1431,25 +1431,10 @@ function EnvironmentSettingsSection() {
   const audit = useAdminAudit();
   const qc = useQueryClient();
 
-  const teamFieldSetting = settings.find((s) => s.pmo_key === SETTING_PMO_TEAM_FIELD);
   const tenantIdSetting = settings.find((s) => s.pmo_key === SETTING_TENANT_ID);
 
-  const [teamField, setTeamField] = useState(teamFieldSetting?.pmo_value ?? '');
   const [tenantId, setTenantId] = useState(tenantIdSetting?.pmo_value ?? '');
-  const [savingTeam, setSavingTeam] = useState(false);
   const [savingTenant, setSavingTenant] = useState(false);
-
-  async function saveTeamField() {
-    if (!teamField.trim()) return;
-    setSavingTeam(true);
-    const newValue = teamField.trim();
-    const oldValue = teamFieldSetting?.pmo_value ?? null;
-    await upsert.mutateAsync({ key: SETTING_PMO_TEAM_FIELD, value: newValue });
-    audit({ settingKey: SETTING_PMO_TEAM_FIELD, oldValue, newValue });
-    qc.invalidateQueries({ queryKey: ['appSettings'] });
-    toast.success('PMO team field saved');
-    setSavingTeam(false);
-  }
 
   async function saveTenantId() {
     if (!tenantId.trim()) return;
@@ -1469,19 +1454,8 @@ function EnvironmentSettingsSection() {
       <div className="space-y-4 max-w-lg">
         <div className="rounded-lg border border-border bg-card p-4 space-y-3">
           <div>
-            <p className="text-sm font-medium text-foreground">PMO Team Flag Field</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Dataverse field name on the Team entity that marks PMO teams (e.g., <code className="font-mono">pmo_pmoteam</code>).</p>
-          </div>
-          <Input value={teamField} onChange={(e) => setTeamField(e.target.value)} placeholder="e.g. pmo_pmoteam" className="font-mono text-sm" />
-          <Button size="sm" onClick={saveTeamField} disabled={savingTeam || !teamField.trim() || teamField.trim() === (teamFieldSetting?.pmo_value ?? '')}>
-            {savingTeam ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Save className="h-3.5 w-3.5 mr-1.5" />}
-            Save
-          </Button>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-4 space-y-3">
-          <div>
             <p className="text-sm font-medium text-foreground">Azure AD Tenant ID</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Used for Planner deep-link construction. Obtain from Azure Portal → Entra ID → Tenant overview.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Used for SharePoint and Graph API calls. Obtain from Azure Portal → Entra ID → Tenant overview.</p>
           </div>
           <Input value={tenantId} onChange={(e) => setTenantId(e.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" className="font-mono text-sm" />
           <Button size="sm" onClick={saveTenantId} disabled={savingTenant || !tenantId.trim() || tenantId.trim() === (tenantIdSetting?.pmo_value ?? '')}>
