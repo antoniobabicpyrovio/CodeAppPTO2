@@ -1,3 +1,5 @@
+import { getGraphToken } from './msalClient';
+
 const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
 const SP_SITE_PATH = 'enoviogroup.sharepoint.com:/sites/Pyrovio:';
 
@@ -77,14 +79,16 @@ const DEMO_SUPERVISORS: PtoSupervisor[] = [
 
 async function spFetch(listName: string, path: string, options?: RequestInit): Promise<Response> {
   const url = `${GRAPH_BASE}/sites/${SP_SITE_PATH}/lists/${encodeURIComponent(listName)}${path}`;
+  const token = await getGraphToken();
   return fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options?.headers,
     },
-    credentials: 'include',
+    credentials: token ? 'omit' : 'include',
   });
 }
 
