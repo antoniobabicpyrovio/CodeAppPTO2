@@ -144,11 +144,19 @@ export const DEFAULT_FEATURE_TOGGLES: FeatureToggles = {
 const TOGGLE_STORAGE_KEY = 'pto_feature_toggles';
 const toggleSubscribers = new Set<() => void>();
 
+// Cache so useSyncExternalStore gets the same reference when the store hasn't changed.
+let _cachedRaw: string | null = null;
+let _cachedToggles: FeatureToggles = DEFAULT_FEATURE_TOGGLES;
+
 function getStoredToggles(): FeatureToggles {
   try {
     const raw = localStorage.getItem(TOGGLE_STORAGE_KEY);
-    if (!raw) return DEFAULT_FEATURE_TOGGLES;
-    return { ...DEFAULT_FEATURE_TOGGLES, ...JSON.parse(raw) };
+    if (raw === _cachedRaw) return _cachedToggles;
+    _cachedRaw = raw;
+    _cachedToggles = raw
+      ? { ...DEFAULT_FEATURE_TOGGLES, ...JSON.parse(raw) }
+      : DEFAULT_FEATURE_TOGGLES;
+    return _cachedToggles;
   } catch {
     return DEFAULT_FEATURE_TOGGLES;
   }
