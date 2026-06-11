@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useSyncExternalStore, type ReactNode } from 'react';
 import { getContext } from '@microsoft/power-apps/app';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { listSettings, type AppSetting } from '../api/appSettings.api';
 import { isDemoModeActive } from '../lib/demoMode';
 import { isImpersonatingUser, subscribeToImpersonation } from '../lib/adminImpersonation';
@@ -345,12 +345,6 @@ export function ConfigurationProvider({ children }: { children: ReactNode }) {
 
   return (
     <ConfigurationContext.Provider value={{ settings, userAdminRole, settingsFailed, config, malformedKeys }}>
-      {settingsFailed && (
-        <div className="fixed top-0 inset-x-0 z-[60] flex items-center gap-2 px-4 py-2 bg-amber-50 border-b border-amber-200 text-amber-800 text-xs">
-          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-          Application settings could not be loaded. Using default values. Reload the page to retry.
-        </div>
-      )}
       {children}
     </ConfigurationContext.Provider>
   );
